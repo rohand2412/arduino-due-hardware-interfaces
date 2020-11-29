@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../due-to-rpi-serial"
+		}
+	],
+	"settings": 
+	{
+		"files.autoSave": "onFocusChange",
+		"workbench.editor.enablePreview": false,
+		"editor.formatOnType": true,
+		"editor.codeActionsOnSave": {}
+	}
+}
