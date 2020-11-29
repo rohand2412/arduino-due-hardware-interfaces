@@ -1,0 +1,6 @@
+#ignore all files in any directory named .pio, .vscode, include, lib, and test
+*/.pio
+*/.vscode
+*/include
+*/lib
+*/test
