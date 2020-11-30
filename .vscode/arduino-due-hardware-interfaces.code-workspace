@@ -4,7 +4,7 @@
 			"path": ".."
 		},
 		{
-			"path": "../due-to-rpi-serial"
+			"path": "../rpi-serial"
 		}
 	],
 	"settings": 
