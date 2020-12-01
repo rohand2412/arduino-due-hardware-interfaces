@@ -4,7 +4,12 @@
 			"path": ".."
 		},
 		{
+			"name": "rpi-serial",
 			"path": "../rpi-serial"
+		},
+		{
+			"name": "motor-shield",
+			"path": "../motor-shield"
 		}
 	],
 	"settings": 
