@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Wire.h>
 #include <Servo.h>
 Servo myservo;
 int pos = 0;
