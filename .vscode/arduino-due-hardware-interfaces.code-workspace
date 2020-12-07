@@ -18,6 +18,10 @@
 		{
 			"name": "imu",
 			"path": "../imu"
+		},
+		{
+			"name": "imu-offset-calibration",
+			"path": "../imu-offset-calibration"
 		}
 	],
 	"settings": 
