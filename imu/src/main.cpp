@@ -1,7 +1,19 @@
 #include <Arduino.h>
 #include <IMU_Wrapper.h>
 
-IMU_Wrapper imu(38);
+/*==========================
+
+Arduino Due ----- MPU6050
+3.3V        -----     VCC
+GND         -----     GND
+38          -----     INT
+(^Any Interrupt Pin Works)
+SDA(20)     -----     SDA
+SCL(21)     -----     SCL
+
+==========================*/
+
+IMU_Wrapper imu(38);    //Input whichever interrupt pin IMU is connected to
 
 void imuDmpDataReady()
 {
