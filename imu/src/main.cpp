@@ -1,7 +1,7 @@
 #include <Arduino.h>
-#include <IMU.h>
+#include <IMU_Wrapper.h>
 
-IMU imu(38);
+IMU_Wrapper imu(38);
 
 void imuDmpDataReady()
 {
@@ -14,7 +14,7 @@ void setup()
     while (!Serial);
     delay(300);
 
-    imu.setOffsets(1474, -2125, 1039, -174, 10, 40);
+    imu.setOffsets(1462, -2132, 1028, -151, 13, 41);
     imu.begin(&imuDmpDataReady);
 }
 
