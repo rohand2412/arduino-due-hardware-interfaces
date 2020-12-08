@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <Wire.h>
-#include <Servo.h>
-Servo myservo;
+#include <Servo_Wrapper.h>
+Servo_Wrapper myservo;
 int pos = 0;
 void sweepservo()
 {
@@ -20,6 +20,7 @@ void sweepservo()
 void setup() 
 {
   myservo.attach(9, 553, 2520);
+  myservo.setBounds(45, 135);
 }
 
 void loop() 
