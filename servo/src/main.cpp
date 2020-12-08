@@ -19,7 +19,7 @@ void sweepservo()
 
 void setup() 
 {
-  myservo.attach(9);  
+  myservo.attach(9, 553, 2520);
 }
 
 void loop() 
