@@ -2,11 +2,17 @@
 #include <Wire.h>
 #include <Ultrasonic.h>
 
-Ultrasonic ultrasonic(22, 24, 20);
+Ultrasonic ultrasonicLeft(22, 24, 20);
+Ultrasonic ultrasonicRight(26, 28, 20);
 
-void ultrasonicEchoPinISR()
+void ultrasonicLeftEchoPinISR()
 {
-  ultrasonic.echoPinISR();
+  ultrasonicLeft.echoPinISR();
+}
+
+void ultrasonicRightEchoPinISR()
+{
+  ultrasonicRight.echoPinISR();
 }
 
 void setup() 
@@ -15,10 +21,14 @@ void setup()
   while (!Serial);
   delay(300);
 
-  ultrasonic.begin(&ultrasonicEchoPinISR);
+  ultrasonicLeft.begin(&ultrasonicLeftEchoPinISR);
+  ultrasonicRight.begin(&ultrasonicRightEchoPinISR);
 }
 
 void loop() {
-  ultrasonic.update();
-  Serial.println(ultrasonic.getDistance());
+  ultrasonicLeft.update();
+  ultrasonicRight.update();
+  Serial.print(ultrasonicLeft.getDistance());
+  Serial.print("\t");
+  Serial.println(ultrasonicRight.getDistance());
 }
