@@ -34,6 +34,18 @@
 		"workbench.editor.enablePreview": false,
 		"editor.formatOnType": true,
 		"editor.codeActionsOnSave": {},
-		"terminal.integrated.rendererType": "dom"
+		"terminal.integrated.rendererType": "dom",
+		"files.associations": {
+			"unordered_map": "cpp",
+			"initializer_list": "cpp",
+			"array": "cpp",
+			"*.tcc": "cpp",
+			"deque": "cpp",
+			"string": "cpp",
+			"vector": "cpp",
+			"string_view": "cpp",
+			"memory": "cpp",
+			"random": "cpp"
+		}
 	}
 }
