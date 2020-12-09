@@ -1,9 +1,24 @@
 #include <Arduino.h>
+#include <Wire.h>
+#include <Ultrasonic.h>
 
-void setup() {
-  // put your setup code here, to run once:
+Ultrasonic ultrasonic(22, 24, 20);
+
+void ultrasonicEchoPinISR()
+{
+  ultrasonic.echoPinISR();
+}
+
+void setup() 
+{
+  Serial.begin(115200);
+  while (!Serial);
+  delay(300);
+
+  ultrasonic.begin(&ultrasonicEchoPinISR);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  ultrasonic.update();
+  Serial.println(ultrasonic.getDistance());
 }
