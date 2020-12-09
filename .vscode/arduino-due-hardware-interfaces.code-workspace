@@ -22,6 +22,10 @@
 		{
 			"name": "imu-offset-calibration",
 			"path": "../imu-offset-calibration"
+		},
+		{
+			"name": "ultrasonic",
+			"path": "../ultrasonic"
 		}
 	],
 	"settings": 
