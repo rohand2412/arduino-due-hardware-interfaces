@@ -1,6 +1,17 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <Servo_Wrapper.h>
+
+/*==========================
+
+Arduino Due -----  Servo
+5V          -----    RED
+GND         -----  BLACK
+9           ----- YELLOW   
+(^Any PWM Pin Works)
+
+==========================*/
+
 Servo_Wrapper myservo;
 int pos = 0;
 void sweepservo()
@@ -19,7 +30,13 @@ void sweepservo()
 
 void setup() 
 {
+  //9 - signal pin, 
+  //553 and 2520 - min/max PWM signal range 
+  //from servocity.com
   myservo.attach(9, 553, 2520);
+
+  //45 - min degree
+  //135 - max degree
   myservo.setBounds(45, 135);
 }
 
