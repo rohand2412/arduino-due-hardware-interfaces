@@ -27,7 +27,7 @@ void setup()
     delay(300);
 
     imu.setOffsets(1462, -2132, 1028, -151, 13, 41);
-    imu.begin(&imuDmpDataReady);
+    imu.begin(imuDmpDataReady);
 }
 
 void loop() 

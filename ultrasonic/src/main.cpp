@@ -21,8 +21,8 @@ void setup()
   while (!Serial);
   delay(300);
 
-  ultrasonicLeft.begin(&ultrasonicLeftEchoPinISR);
-  ultrasonicRight.begin(&ultrasonicRightEchoPinISR);
+  ultrasonicLeft.begin(ultrasonicLeftEchoPinISR);
+  ultrasonicRight.begin(ultrasonicRightEchoPinISR);
 }
 
 void loop() {
