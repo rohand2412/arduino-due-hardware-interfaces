@@ -3,7 +3,7 @@
 #include <Ultrasonic.h>
 
 Ultrasonic ultrasonicLeft(22, 24, 20);
-Ultrasonic ultrasonicRight(26, 28, 20);
+Ultrasonic ultrasonicRight(22, 28, 20);
 
 void ultrasonicLeftEchoPinISR()
 {
