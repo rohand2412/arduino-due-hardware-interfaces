@@ -13,7 +13,7 @@ SCL(21)     -----     SCL
 
 ==========================*/
 
-IMU_Wrapper imu(38);    //Input whichever interrupt pin IMU is connected to
+IMU_Wrapper imu(45);    //Input whichever interrupt pin IMU is connected to
 
 void imuDmpDataReady()
 {
@@ -26,7 +26,7 @@ void setup()
     while (!Serial);
     delay(300);
 
-    imu.setOffsets(1462, -2132, 1028, -151, 13, 41);
+    imu.setOffsets(1451, -2164, 1053, -32, 11, 36);
     imu.begin(imuDmpDataReady);
 }
 
