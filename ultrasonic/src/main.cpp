@@ -5,13 +5,13 @@
 unsigned int echoPins[4] = {53, 51, 49, 47};
 Ultrasonic_Wrapper ultrasonics(52, echoPins, 20, 4);
 
-void ultrasonicFrontEchoPinISR() { ultrasonics.echoPinISR(0); }
+void ultrasonicFrontEchoPinISR() { ultrasonics.echoPinISR(Ultrasonic_Wrapper::ULTRASONIC_FRONT); }
 
-void ultrasonicLeftEchoPinISR() { ultrasonics.echoPinISR(1); }
+void ultrasonicLeftEchoPinISR() { ultrasonics.echoPinISR(Ultrasonic_Wrapper::ULTRASONIC_LEFT); }
 
-void ultrasonicRightEchoPinISR() { ultrasonics.echoPinISR(2); }
+void ultrasonicRightEchoPinISR() { ultrasonics.echoPinISR(Ultrasonic_Wrapper::ULTRASONIC_RIGHT); }
 
-void ultrasonicBackEchoPinISR() { ultrasonics.echoPinISR(3); }
+void ultrasonicBackEchoPinISR() { ultrasonics.echoPinISR(Ultrasonic_Wrapper::ULTRASONIC_BACK); }
 
 void setup() 
 {
@@ -29,12 +29,12 @@ void setup()
 void loop() {
   ultrasonics.update();
   Serial.print("Front: ");
-  Serial.print(ultrasonics.getDistance(0));
+  Serial.print(ultrasonics.getDistance(Ultrasonic_Wrapper::ULTRASONIC_FRONT));
   Serial.print("\tLeft: ");
-  Serial.print(ultrasonics.getDistance(1));
+  Serial.print(ultrasonics.getDistance(Ultrasonic_Wrapper::ULTRASONIC_LEFT));
   Serial.print("\tRight: ");
-  Serial.print(ultrasonics.getDistance(2));
+  Serial.print(ultrasonics.getDistance(Ultrasonic_Wrapper::ULTRASONIC_RIGHT));
   Serial.print("\tBack: ");
-  Serial.print(ultrasonics.getDistance(3));
+  Serial.print(ultrasonics.getDistance(Ultrasonic_Wrapper::ULTRASONIC_BACK));
   Serial.print("\n");
 }
