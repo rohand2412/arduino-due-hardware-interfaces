@@ -22,17 +22,23 @@ void sweepservo()
   for (pos = 0; pos <= 180; pos += 1)
   {
     myservo.write(pos);
+    Serial.println(myservo.read());
     delay(15);
   }
   for (pos = 180; pos >= 0; pos -= 1)
   {
     myservo.write(pos);
+    Serial.println(myservo.read());
     delay(15);
   }
 }
 
 void setup() 
 {
+  Serial.begin(115200);
+  while (!Serial)
+    ;
+  delay(300);
   //9 - signal pin, 
   //553 and 2520 - min/max PWM signal range 
   //from servocity.com
