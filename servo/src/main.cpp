@@ -12,7 +12,10 @@ GND         -----  BLACK
 
 ==========================*/
 
-Servo_Wrapper myservo;
+//45 - min degree
+//135 - max degree
+Servo_Wrapper myservo(45, 135);
+
 int pos = 0;
 void sweepservo()
 {
@@ -34,10 +37,6 @@ void setup()
   //553 and 2520 - min/max PWM signal range 
   //from servocity.com
   myservo.attach(9, 553, 2520);
-
-  //45 - min degree
-  //135 - max degree
-  myservo.setBounds(45, 135);
 }
 
 void loop() 
