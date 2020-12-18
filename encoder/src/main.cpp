@@ -1,24 +1,20 @@
-//Not my code; this is example code
-
-/* Encoder Library - TwoKnobs Example
- * http://www.pjrc.com/teensy/td_libs_Encoder.html
- *
- * This example code is in the public domain.
- */
-
+#include <Arduino.h>
 #include <Wire.h>
-#include <Encoder.h>
+#include <Encoder_Wrapper.h>
 
 // Change these pin numbers to the pins connected to your encoder.
 //   Best Performance: both pins have interrupt capability
 //   Good Performance: only the first pin has interrupt capability
 //   Low Performance:  neither pin has interrupt capability
-Encoder knobLeft(46, 44);
-Encoder knobRight(50, 48);
+unsigned int pins[4] = {46, 44, 50, 48};
+Encoder_Wrapper encoders(pins, 2);
 //   avoid using pins with LEDs attached
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
+  while (!Serial)
+    ;
+  delay(300);
   Serial.println("TwoKnobs Encoder Test:");
 }
 
@@ -27,8 +23,8 @@ long positionRight = -999;
 
 void loop() {
   long newLeft, newRight;
-  newLeft = knobLeft.read();
-  newRight = knobRight.read();
+  newLeft = encoders.getCount(0);
+  newRight = encoders.getCount(1);
   if (newLeft != positionLeft || newRight != positionRight) {
     Serial.print("Left = ");
     Serial.print(newLeft);
@@ -43,7 +39,6 @@ void loop() {
   if (Serial.available()) {
     Serial.read();
     Serial.println("Reset both knobs to zero");
-    knobLeft.write(0);
-    knobRight.write(0);
+    encoders.resetCount();
   }
 }
