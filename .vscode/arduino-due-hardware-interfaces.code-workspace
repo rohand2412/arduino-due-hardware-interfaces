@@ -26,6 +26,10 @@
 		{
 			"name": "ultrasonic",
 			"path": "../ultrasonic"
+		},
+		{
+			"name": "encoder",
+			"path": "../encoder"
 		}
 	],
 	"settings": 
