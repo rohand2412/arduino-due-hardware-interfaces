@@ -6,14 +6,15 @@
  * This example code is in the public domain.
  */
 
+#include <Wire.h>
 #include <Encoder.h>
 
 // Change these pin numbers to the pins connected to your encoder.
 //   Best Performance: both pins have interrupt capability
 //   Good Performance: only the first pin has interrupt capability
 //   Low Performance:  neither pin has interrupt capability
-Encoder knobLeft(5, 6);
-Encoder knobRight(7, 8);
+Encoder knobLeft(46, 44);
+Encoder knobRight(50, 48);
 //   avoid using pins with LEDs attached
 
 void setup() {
