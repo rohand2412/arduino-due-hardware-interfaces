@@ -17,6 +17,8 @@ void setup()
 
 void loop() 
 {
+  Serial.println(encoder.getSensorNum());
+  Serial.println(encoders.getSensorNum());
   Serial.println(encoder.getCount());
   Serial.println(encoders.getCount(0));
   Serial.println(encoders.getCount(1));
