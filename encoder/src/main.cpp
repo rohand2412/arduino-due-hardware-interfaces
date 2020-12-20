@@ -17,6 +17,7 @@ void setup()
 
 void loop() 
 {
+  Serial.println(Encoder_Wrapper::getTotalSensorNum());
   Serial.println(encoder.getSensorNum());
   Serial.println(encoders.getSensorNum());
   Serial.println(encoder.getCount());
