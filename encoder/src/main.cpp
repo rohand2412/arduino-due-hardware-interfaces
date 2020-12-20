@@ -17,29 +17,40 @@ void setup()
 
 void loop() 
 {
+  Serial.print("Total Number of Initialized Encoders: ");
   Serial.println(Encoder_Wrapper::getTotalSensorNum());
-  Serial.println(encoder.getSensorNum());
-  Serial.println(encoders.getSensorNum());
-  Serial.println(encoder.getCount());
-  Serial.println(encoders.getCount(0));
-  Serial.println(encoders.getCount(1));
-  encoder.setCount(-100, 0);
-  encoders.setCount(100, 0);
-  encoders.setCount(200, 1);
-  Serial.println(encoder.getCount());
-  Serial.println(encoders.getCount(0));
-  Serial.println(encoders.getCount(1));
-  encoder.resetCount();
-  encoders.resetCount();
-  Serial.println(encoder.getCount());
-  Serial.println(encoder.getPin(0, 0));
-  Serial.println(encoder.getPin(0, 1));
-  Serial.println(encoders.getCount(0));
-  Serial.println(encoders.getCount(1));
-  Serial.println(encoders.getPin(0, 0));
-  Serial.println(encoders.getPin(0, 1));
-  Serial.println(encoders.getPin(1, 0));
-  Serial.println(encoders.getPin(1, 1));
+
+  for (size_t sensor = 0; sensor < encoder.getSensorNum(); sensor++)
+  {
+    Serial.print("getCount: ");
+    Serial.println(encoder.getCount(sensor));
+    encoder.setCount(-100, sensor);
+    Serial.print("getCount: ");
+    Serial.println(encoder.getCount(sensor));
+    encoder.resetCount();
+    Serial.print("getCount: ");
+    Serial.println(encoder.getCount(sensor));
+    Serial.print("getPin: ");
+    Serial.print(encoder.getPin(sensor, 0));
+    Serial.print(" ");
+    Serial.println(encoder.getPin(sensor, 1));
+  }
+
+  for (size_t sensor = 0; sensor < encoders.getSensorNum(); sensor++)
+  {
+    Serial.print("getCount: ");
+    Serial.println(encoders.getCount(sensor));
+    encoders.setCount(100, sensor);
+    Serial.print("getCount: ");
+    Serial.println(encoders.getCount(sensor));
+    encoders.resetCount();
+    Serial.print("getCount: ");
+    Serial.println(encoders.getCount(sensor));
+    Serial.print("getPin: ");
+    Serial.print(encoders.getPin(sensor, 0));
+    Serial.print(" ");
+    Serial.println(encoders.getPin(sensor, 1));
+  }
   while (true)
     ;
 }
