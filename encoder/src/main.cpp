@@ -2,8 +2,8 @@
 #include <Wire.h>
 #include <Encoder_Wrapper.h>
 
-unsigned int twoPins[2] = {25, 23};
-Encoder_Wrapper encoder(twoPins, 1);
+unsigned int twoPins[4] = {25, 23, 29, 27};
+Encoder_Wrapper encoder(twoPins, 2);
 unsigned int fourPins[4] = {46, 44, 50, 48};
 Encoder_Wrapper encoders(fourPins, 2);
 
