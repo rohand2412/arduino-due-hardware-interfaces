@@ -4,12 +4,13 @@
 #include <Adafruit_MS_PWMServoDriver.h>
 Adafruit_MotorShield AFMS = Adafruit_MotorShield(); 
 Adafruit_DCMotor *Motorone = AFMS.getMotor(1);
-Adafruit_DCMotor *Motortwo = AFMS.getMotor(1);
+Adafruit_DCMotor *Motortwo = AFMS.getMotor(3);
 
-
-void setup() 
+int speedone = 100;
+void setup()
 {
   AFMS.begin();
+  delay(3000);
 }
 
 void runmotor(int speedone, int speedtwo)
@@ -85,5 +86,9 @@ void runmotor(int speedone, int speedtwo)
 }
 void loop() 
 {
-  runmotor(-20, 20);
+  Motortwo->setSpeed(speedone);
+  Motortwo->run(FORWARD);
+  Motorone->setSpeed(speedone);
+  Motorone->run(BACKWARD);
+  delay(6000);
 }
