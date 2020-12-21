@@ -24,7 +24,7 @@ void loop()
   {
     Serial.print("getCount: ");
     Serial.println(encoder.getCount(sensor));
-    encoder.setCount(-100, sensor);
+    encoder.setCount(sensor, -100);
     Serial.print("getCount: ");
     Serial.println(encoder.getCount(sensor));
     encoder.resetCount();
@@ -40,7 +40,7 @@ void loop()
   {
     Serial.print("getCount: ");
     Serial.println(encoders.getCount(sensor));
-    encoders.setCount(100, sensor);
+    encoders.setCount(sensor, 100);
     Serial.print("getCount: ");
     Serial.println(encoders.getCount(sensor));
     encoders.resetCount();
