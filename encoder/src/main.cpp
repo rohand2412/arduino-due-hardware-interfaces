@@ -18,9 +18,9 @@ void setup()
   Encoder_Wrapper encoders[wrapperNum];
   unsigned int newEncoderPins[encoderNum * Encoder_Wrapper::PINS_PER_SENSOR] = {25, 23, 29, 27, 31, 33};
   encoders[0].begin(newEncoderPins, encoderNum);
-  unsigned int mixedEncoderPins[encoderNum * Encoder_Wrapper::PINS_PER_SENSOR] = {31, 33, 46, 44, 50, 48};
+  unsigned int mixedEncoderPins[encoderNum * Encoder_Wrapper::PINS_PER_SENSOR] = {33, 31, 46, 44, 50, 48};
   encoders[1].begin(mixedEncoderPins, encoderNum);
-  unsigned int repeatedEncoderPins[encoderNum * Encoder_Wrapper::PINS_PER_SENSOR] = {29, 27, 25, 23, 46, 44};
+  unsigned int repeatedEncoderPins[encoderNum * Encoder_Wrapper::PINS_PER_SENSOR] = {29, 27, 25, 23, 44, 46};
   encoders[2].begin(repeatedEncoderPins, encoderNum);
 
   Serial.print("Total Number of Initialized Encoders: ");
@@ -53,9 +53,10 @@ void loop()
   if (once)
   {
     size_t encoderNum = 2;
-    unsigned int encoderPins[encoderNum * Encoder_Wrapper::PINS_PER_SENSOR] = {46, 44, 50, 48};
-    totalEncoders.begin(encoderPins, encoderNum);
-    localEncoders.begin(encoderPins, encoderNum);
+    unsigned int totalEncoderPins[encoderNum * Encoder_Wrapper::PINS_PER_SENSOR] = {46, 44, 50, 48};
+    unsigned int localEncoderPins[encoderNum * Encoder_Wrapper::PINS_PER_SENSOR] = {44, 46, 48, 50};
+    totalEncoders.begin(totalEncoderPins, encoderNum);
+    localEncoders.begin(localEncoderPins, encoderNum);
     once = false;
   }
 
