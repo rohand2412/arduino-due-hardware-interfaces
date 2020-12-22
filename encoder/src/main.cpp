@@ -2,6 +2,10 @@
 #include <Wire.h>
 #include <Encoder_Wrapper.h>
 
+bool once = true;
+Encoder_Wrapper totalEncoders;
+Encoder_Wrapper localEncoders;
+
 void setup() 
 {
   Serial.begin(115200);
@@ -40,6 +44,34 @@ void setup()
       Serial.println(encoders[wrapper].getPin(sensor, Encoder_Wrapper::ENCODER_OUT_B));
     }
   }
+
+  delay(2000);
 }
 
-void loop(){};
+void loop()
+{
+  if (once)
+  {
+    size_t encoderNum = 2;
+    unsigned int encoderPins[encoderNum * Encoder_Wrapper::PINS_PER_SENSOR] = {46, 44, 50, 48};
+    totalEncoders.begin(encoderPins, encoderNum);
+    localEncoders.begin(encoderPins, encoderNum);
+    once = false;
+  }
+
+  Serial.print("localEncoders: Left: ");
+  Serial.print(localEncoders.getCount(Encoder_Wrapper::ENCODER_LEFT));
+  Serial.print("\tRight: ");
+  Serial.print(localEncoders.getCount(Encoder_Wrapper::ENCODER_RIGHT));
+  Serial.print("\ttotalEncoders: Left: ");
+  Serial.print(totalEncoders.getCount(Encoder_Wrapper::ENCODER_LEFT));
+  Serial.print("\tRight: ");
+  Serial.print(totalEncoders.getCount(Encoder_Wrapper::ENCODER_RIGHT));
+  Serial.print("\n");
+
+  if (Serial.available()) {
+    Serial.read();
+    Serial.println("Reset localEncoders");
+    localEncoders.resetCount();
+  }
+}
