@@ -31,9 +31,9 @@ void loop()
     Serial.print("getCount: ");
     Serial.println(encoder.getCount(sensor));
     Serial.print("getPin: ");
-    Serial.print(encoder.getPin(sensor, 0));
+    Serial.print(encoder.getPin(sensor, Encoder_Wrapper::ENCODER_OUT_A));
     Serial.print(" ");
-    Serial.println(encoder.getPin(sensor, 1));
+    Serial.println(encoder.getPin(sensor, Encoder_Wrapper::ENCODER_OUT_B));
   }
 
   for (size_t sensor = 0; sensor < encoders.getSensorNum(); sensor++)
@@ -47,9 +47,9 @@ void loop()
     Serial.print("getCount: ");
     Serial.println(encoders.getCount(sensor));
     Serial.print("getPin: ");
-    Serial.print(encoders.getPin(sensor, 0));
+    Serial.print(encoders.getPin(sensor, Encoder_Wrapper::ENCODER_OUT_A));
     Serial.print(" ");
-    Serial.println(encoders.getPin(sensor, 1));
+    Serial.println(encoders.getPin(sensor, Encoder_Wrapper::ENCODER_OUT_B));
   }
   while (true)
     ;
