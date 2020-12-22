@@ -13,8 +13,8 @@ void setup()
     ;
   delay(300);
 
-  size_t encoderNum = 3;
-  size_t wrapperNum = 3;
+  const size_t encoderNum = 3;
+  const size_t wrapperNum = 3;
   Encoder_Wrapper encoders[wrapperNum];
   unsigned int newEncoderPins[encoderNum * Encoder_Wrapper::PINS_PER_SENSOR] = {25, 23, 29, 27, 31, 33};
   encoders[0].begin(newEncoderPins, encoderNum);
@@ -52,7 +52,7 @@ void loop()
 {
   if (once)
   {
-    size_t encoderNum = 2;
+    const size_t encoderNum = 2;
     unsigned int totalEncoderPins[encoderNum * Encoder_Wrapper::PINS_PER_SENSOR] = {46, 44, 50, 48};
     unsigned int localEncoderPins[encoderNum * Encoder_Wrapper::PINS_PER_SENSOR] = {44, 46, 48, 50};
     totalEncoders.begin(totalEncoderPins, encoderNum);
