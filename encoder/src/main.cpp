@@ -30,6 +30,11 @@ void setup()
   {
     for (size_t sensor = 0; sensor < encoders[wrapper].getSensorNum(); sensor++)
     {
+      if (sensor == encoders[wrapper].getSensorNum() - 1)
+      {
+        //Check for index capping functionality
+        sensor++;
+      }
       Serial.print("encoders getCount: ");
       Serial.println(encoders[wrapper].getCount(sensor));
       encoders[wrapper].setCount(sensor, -100);
@@ -41,7 +46,8 @@ void setup()
       Serial.print("encoders getPin: ");
       Serial.print(encoders[wrapper].getPin(sensor, Encoder_Wrapper::ENCODER_OUT_A));
       Serial.print(" ");
-      Serial.println(encoders[wrapper].getPin(sensor, Encoder_Wrapper::ENCODER_OUT_B));
+      //Check for index capping functionality
+      Serial.println(encoders[wrapper].getPin(sensor, Encoder_Wrapper::ENCODER_OUT_B + 1));
     }
   }
 
