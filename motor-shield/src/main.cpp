@@ -40,8 +40,11 @@ void setup()
 
   delay(2000);
 
+  motors.resetCount();
   motors.run(20);
 }
+
+long int counts_per_revolution = 4560;
 
 void loop()
 {
@@ -50,4 +53,11 @@ void loop()
   Serial.print("\tRight Count: ");
   Serial.print(motors.getCount(Motor_Wrapper::MOTOR_RIGHT));
   Serial.print("\n");
+
+  if (motors.getCount(Motor_Wrapper::MOTOR_RIGHT) > counts_per_revolution)
+  {
+    motors.stop();
+    while (true)
+      ;
+  }
 }
