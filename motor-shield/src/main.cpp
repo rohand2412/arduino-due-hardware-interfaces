@@ -17,13 +17,37 @@ void setup()
     unsigned int encoderPins[motorNum * Encoder_Wrapper::PINS_PER_SENSOR] = {46, 44, 50, 48};
     motors.setEncoders(encoderPins);
   }
-
   motors.setSpeedMultiplier(Motor_Wrapper::MOTOR_FLIP, Motor_Wrapper::MOTOR_LEFT);
   motors.setSpeedMultiplier(Motor_Wrapper::MOTOR_NO_FLIP, Motor_Wrapper::MOTOR_RIGHT);
 
   motors.begin();
 
+  for (size_t motor = 0; motor < motors.getMotorNum(); motor++)
+  {
+    Serial.print("motor id: ");
+    Serial.println(motor);
+    Serial.print("speedMultiplier: ");
+    Serial.println(motors.getSpeedMultiplier(motor));
+    Serial.print("speed: ");
+    Serial.println(motors.getSpeed(motor));
+    Serial.print("state: ");
+    Serial.println(motors.getState(motor));
+    Serial.print("Encoder OUT_A: ");
+    Serial.println(motors.getEncoderPin(motor, Encoder_Wrapper::ENCODER_OUT_A));
+    Serial.print("Encoder OUT_B: ");
+    Serial.println(motors.getEncoderPin(motor, Encoder_Wrapper::ENCODER_OUT_B));
+  }
+
+  delay(2000);
+
   motors.run(20);
 }
 
-void loop() {}
+void loop()
+{
+  Serial.print("Left Count: ");
+  Serial.print(motors.getCount(Motor_Wrapper::MOTOR_LEFT));
+  Serial.print("\tRight Count: ");
+  Serial.print(motors.getCount(Motor_Wrapper::MOTOR_RIGHT));
+  Serial.print("\n");
+}
