@@ -30,6 +30,10 @@
 		{
 			"name": "encoder",
 			"path": "../encoder"
+		},
+		{
+			"name": "motor-pid-calibration",
+			"path": "../motor-pid-calibration"
 		}
 	],
 	"settings": 
