@@ -1,94 +1,29 @@
 #include <Arduino.h>
 #include <Wire.h>
-#include <Adafruit_MotorShield.h>
-#include <Adafruit_MS_PWMServoDriver.h>
-Adafruit_MotorShield AFMS = Adafruit_MotorShield(); 
-Adafruit_DCMotor *Motorone = AFMS.getMotor(1);
-Adafruit_DCMotor *Motortwo = AFMS.getMotor(3);
+#include <Motor_Wrapper.h>
 
-int speedone = 100;
+size_t motorNum = 2;
+unsigned int motorPorts[2] = {Motor_Wrapper::SHIELD_M1, Motor_Wrapper::SHIELD_M3};
+Motor_Wrapper motors(motorPorts, motorNum);
+
 void setup()
 {
-  AFMS.begin();
-  delay(3000);
+  Serial.begin(115200);
+  while (!Serial)
+    ;
+  delay(300);
+
+  {
+    unsigned int encoderPins[motorNum * Encoder_Wrapper::PINS_PER_SENSOR] = {46, 44, 50, 48};
+    motors.setEncoders(encoderPins);
+  }
+
+  motors.setSpeedMultiplier(Motor_Wrapper::MOTOR_FLIP, Motor_Wrapper::MOTOR_LEFT);
+  motors.setSpeedMultiplier(Motor_Wrapper::MOTOR_NO_FLIP, Motor_Wrapper::MOTOR_RIGHT);
+
+  motors.begin();
+
+  motors.run(20);
 }
 
-void runmotor(int speedone, int speedtwo)
-{
-  bool negone;
-  bool negtwo;
-  if(speedone <= -255 || speedone >= 255)
-  {
-    if(speedone <= -255)
-    {
-      speedone = -255;
-    }
-    else
-    {
-      speedone = 255;
-    }
-  }
-  if(speedtwo <= -255 || speedtwo >= 255)
-  {
-    if(speedtwo <= -255)
-    {
-      speedtwo = -255;
-    }
-    else
-    {
-      speedtwo = 255;
-    }
-  }
-  if(speedone<= 0)
-  {
-    if(speedone == 0)
-    {
-      Motorone->setSpeed(0);
-      Motorone->run(RELEASE);
-    }
-    else
-    {
-      negone = true;
-    }
-  }
-  if(speedtwo <= 0)
-  {
-    if(speedone == 0)
-    {
-      Motortwo->setSpeed(0);
-      Motortwo->run(RELEASE);
-    }
-    else
-    {
-      negtwo = true;
-    }
-  }
-  if(negone)
-  {
-    Motortwo->setSpeed(speedone);
-    Motortwo->run(BACKWARD);
-  }
-  else if(!negone)
-  {
-    Motortwo->setSpeed(speedone);
-    Motortwo->run(FORWARD);
-  }
-  if(negtwo)
-  {
-    Motortwo->setSpeed(speedtwo);
-    Motortwo->run(BACKWARD);
-  }
-  else if(!negtwo)
-  {
-    Motortwo->setSpeed(speedtwo);
-    Motortwo->run(FORWARD);
-  }
-}
-void loop() 
-{
-  Motortwo->setSpeed(speedone);
-  Motortwo->run(FORWARD);
-  Motorone->setSpeed(speedone);
-  Motorone->run(BACKWARD);
-  delay(6000);
-}
+void loop() {}
