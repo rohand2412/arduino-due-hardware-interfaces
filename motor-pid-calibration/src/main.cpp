@@ -64,7 +64,7 @@ size_t minIndex(float* buffer, size_t startLen, size_t endLen)
 
   for (size_t item = startLen; item < endLen; item++)
   {
-    float absItem = buffer[item] < 0 ? -buffer[item] : buffer[item];
+    float absItem = fabs(buffer[item]);
     if (absItem < minVal)
     {
       minVal = absItem;
