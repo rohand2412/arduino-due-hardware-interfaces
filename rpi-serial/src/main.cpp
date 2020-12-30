@@ -1,47 +1,22 @@
 #include <Arduino.h>
-char incomingByte;
-int mspeedone = 0;
-int mspeedtwo = 0;
+
 void setup() 
 {
-  Serial.begin(57600);
+  Serial.begin(115200);
+  while (!Serial)
+    ;
+  delay(300);
+
+  Serial3.begin(115200);
+  while (!Serial3)
+    ;
+  delay(300);
 }
 
 void loop() 
 {
-  if((incomingByte = Serial.read()) == '<')
+  if (Serial3.available())
   {
-    bool firstneg = false;
-    bool secondneg = false;
-    while((incomingByte = Serial.read()) != ',')
-    {
-      if(incomingByte == '-')
-      {
-        firstneg = true;
-      }
-      else if(incomingByte < '0' && incomingByte > '0')
-      {
-        mspeedone = (mspeedone*10) + (incomingByte - '0');
-      }
-    }
-    while((incomingByte = Serial.read()) != '>')
-    {
-      if(incomingByte == '-')
-      {
-        secondneg = true;
-      }
-      else if(incomingByte < '0' && incomingByte > '0')
-      {
-        mspeedone = (mspeedtwo*10) + (incomingByte - '0');
-      }
-    }
-    if(firstneg)
-    {
-      mspeedone = mspeedone * (-1);
-    }
-    if(secondneg)
-    {
-      mspeedtwo = mspeedtwo * (-1);
-    }
+    Serial.println(Serial3.read());
   }
 }
