@@ -54,7 +54,8 @@
 			"string_view": "cpp",
 			"memory": "cpp",
 			"random": "cpp",
-			"cstdlib": "cpp"
+			"cstdlib": "cpp",
+			"cmath": "cpp"
 		}
 	}
 }
