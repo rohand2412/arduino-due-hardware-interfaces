@@ -17,6 +17,9 @@ void setup()
     unsigned int encoderPins[motorNum * Encoder_Wrapper::PINS_PER_SENSOR] = {46, 44, 50, 48};
     motors.setEncoders(encoderPins);
   }
+
+  motors.setPid(1.5, 0, 0, Motor_Wrapper::MOTOR_LEFT);
+  motors.setPid(1.5, 0, 0, Motor_Wrapper::MOTOR_RIGHT);
   motors.setSpeedMultiplier(Motor_Wrapper::MOTOR_FLIP, Motor_Wrapper::MOTOR_LEFT);
   motors.setSpeedMultiplier(Motor_Wrapper::MOTOR_NO_FLIP, Motor_Wrapper::MOTOR_RIGHT);
 
@@ -40,24 +43,25 @@ void setup()
 
   delay(2000);
 
-  motors.resetCount();
-  motors.run(20);
+  motors.run(-0.5);
 }
-
-long int counts_per_revolution = 4560;
 
 void loop()
 {
-  Serial.print("Left Count: ");
-  Serial.print(motors.getCount(Motor_Wrapper::MOTOR_LEFT));
-  Serial.print("\tRight Count: ");
-  Serial.print(motors.getCount(Motor_Wrapper::MOTOR_RIGHT));
-  Serial.print("\n");
+  motors.update();
 
-  if (motors.getCount(Motor_Wrapper::MOTOR_RIGHT) > counts_per_revolution)
-  {
-    motors.stop();
-    while (true)
-      ;
-  }
+  long int rightCount = motors.getCount(Motor_Wrapper::MOTOR_RIGHT);
+  long int leftCount = motors.getCount(Motor_Wrapper::MOTOR_LEFT);
+  float rightActualSpeed = motors.getActualSpeed(Motor_Wrapper::MOTOR_RIGHT);
+  float leftActualSpeed = motors.getActualSpeed(Motor_Wrapper::MOTOR_LEFT);
+
+  Serial.print("Left Count: ");
+  Serial.print(leftCount);
+  Serial.print("\tRight Count: ");
+  Serial.print(rightCount);
+  Serial.print("\tLeft Actual Speed: ");
+  Serial.print(leftActualSpeed);
+  Serial.print("\tRight Actual Speed: ");
+  Serial.print(rightActualSpeed);
+  Serial.print("\n");
 }
