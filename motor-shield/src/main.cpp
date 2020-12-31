@@ -18,8 +18,8 @@ void setup()
     motors.setEncoders(encoderPins);
   }
 
-  motors.setPid(150, 0, 0, Motor_Wrapper::MOTOR_LEFT);
-  motors.setPid(150, 0, 0, Motor_Wrapper::MOTOR_RIGHT);
+  motors.setPid(1.5, 0, 0, Motor_Wrapper::MOTOR_LEFT);
+  motors.setPid(1.5, 0, 0, Motor_Wrapper::MOTOR_RIGHT);
   motors.setSpeedMultiplier(Motor_Wrapper::MOTOR_FLIP, Motor_Wrapper::MOTOR_LEFT);
   motors.setSpeedMultiplier(Motor_Wrapper::MOTOR_NO_FLIP, Motor_Wrapper::MOTOR_RIGHT);
 
@@ -32,7 +32,7 @@ void setup()
     Serial.print("speedMultiplier: ");
     Serial.println(motors.getSpeedMultiplier(motor));
     Serial.print("speed: ");
-    Serial.println(motors.getSpeed(motor)->data);
+    Serial.println(motors.getSpeed(motor));
     Serial.print("state: ");
     Serial.println(motors.getState(motor));
     Serial.print("Encoder OUT_A: ");
@@ -43,7 +43,7 @@ void setup()
 
   delay(2000);
 
-  motors.run(-50);
+  motors.run(-0.5);
 }
 
 void loop()
