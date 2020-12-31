@@ -54,6 +54,8 @@ void loop()
   long int leftCount = motors.getCount(Motor_Wrapper::MOTOR_LEFT);
   double rightActualSpeed = motors.getActualSpeed(Motor_Wrapper::MOTOR_RIGHT);
   double leftActualSpeed = motors.getActualSpeed(Motor_Wrapper::MOTOR_LEFT);
+  unsigned int rightElapsedTime = motors.getElapsedCorrectedTime_MS(Motor_Wrapper::MOTOR_RIGHT);
+  unsigned int leftElapsedTime = motors.getElapsedCorrectedTime_MS(Motor_Wrapper::MOTOR_LEFT);
 
   Serial.print("Left Count: ");
   Serial.print(leftCount);
@@ -63,5 +65,9 @@ void loop()
   Serial.print(leftActualSpeed);
   Serial.print("\tRight Actual Speed: ");
   Serial.print(rightActualSpeed);
+  Serial.print("\tLeft Elapsed Time: ");
+  Serial.print(leftElapsedTime);
+  Serial.print("\tRight Elapsed Time: ");
+  Serial.print(rightElapsedTime);
   Serial.print("\n");
 }
