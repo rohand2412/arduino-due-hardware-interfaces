@@ -18,8 +18,8 @@ void setup()
     motors.setEncoders(encoderPins);
   }
 
-  motors.setPid(1.5, 0, 0, Motor_Wrapper::MOTOR_LEFT);
-  motors.setPid(1.5, 0, 0, Motor_Wrapper::MOTOR_RIGHT);
+  motors.setPid(4, 2.5, 0, Motor_Wrapper::MOTOR_LEFT);
+  motors.setPid(4, 5, 0, Motor_Wrapper::MOTOR_RIGHT);
   motors.setSpeedMultiplier(Motor_Wrapper::MOTOR_FLIP, Motor_Wrapper::MOTOR_LEFT);
   motors.setSpeedMultiplier(Motor_Wrapper::MOTOR_NO_FLIP, Motor_Wrapper::MOTOR_RIGHT);
 
