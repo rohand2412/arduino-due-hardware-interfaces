@@ -14,23 +14,24 @@ GND         -----  BLACK
 
 //45 - min degree
 //135 - max degree
-Servo_Wrapper myservo(45, 135);
+Servo_Wrapper myservo(58, 138);
 
 int pos = 0;
 void sweepservo()
 {
-  for (pos = 0; pos <= 180; pos += 1)
+  for (pos = 0; pos <= 80; pos += 1)
   {
     myservo.write(pos);
     Serial.println(myservo.read());
-    delay(15);
+    delay(30);
   }
-  for (pos = 180; pos >= 0; pos -= 1)
+  for (pos = 80; pos >= 0; pos -= 1)
   {
     myservo.write(pos);
     Serial.println(myservo.read());
-    delay(15);
+    delay(30);
   }
+  delay(300);
 }
 
 void setup() 
@@ -42,7 +43,7 @@ void setup()
   //9 - signal pin, 
   //553 and 2520 - min/max PWM signal range 
   //from servocity.com
-  myservo.attach(9, 553, 2520);
+  myservo.attach(10, 510, 2520);
 }
 
 void loop() 
