@@ -16,12 +16,12 @@ const size_t bufferNum = 3;
 size_t currentBuffer[motorNum] = {0, 0};
 float actualSpeeds[bufferLen * bufferNum * motorNum];
 size_t actualSpeedsLen[motorNum];
-float actualSpeedAvgs[bufferNum * motorNum];
+float metricBuffer[bufferNum * motorNum];
 
 float coefficientGain[motorNum] = {10, 10};
 int gainDirection[bufferNum] = {0, -1, 1};
-unsigned int updateThreshold = 100;
-unsigned int currentUpdateNum = 0;
+const unsigned int updateThreshold = 100;
+unsigned int currentUpdateNums[motorNum] = {0, 0};
 
 void clear(float* buffer, size_t startLen, size_t endLen)
 {
@@ -39,12 +39,12 @@ void clear(size_t* buffer, size_t startLen, size_t endLen)
   }
 }
 
-void reset()
+void reset(size_t motor)
 {
-  motors.stop();
-  motors.setSpeed(0, Motor_Wrapper::MOTOR_ALL);
-  motors.resetCount();
-  currentUpdateNum = 0;
+  motors.setState(Motor_Wrapper::MOTOR_OFF, motor);
+  motors.setSpeed(0, motor);
+  motors.resetCount(motor);
+  currentUpdateNums[motor] = 0;
 }
 
 float average(float* buffer, size_t startLen, size_t endLen)
@@ -55,6 +55,17 @@ float average(float* buffer, size_t startLen, size_t endLen)
     sum += buffer[item];
   }
   return sum / (endLen - startLen);
+}
+
+float averageError(float* buffer, size_t startLen, size_t endLen)
+{
+  float errorBuffer[endLen - startLen];
+  for (size_t item = 0; item < (endLen - startLen); item++)
+  {
+    errorBuffer[item] = fabs(buffer[startLen + item] - targetSpeed);
+  }
+
+  return average(errorBuffer, 0, endLen - startLen);
 }
 
 size_t minIndex(float* buffer, size_t startLen, size_t endLen)
@@ -73,6 +84,16 @@ size_t minIndex(float* buffer, size_t startLen, size_t endLen)
   }
 
   return indexNum;
+}
+
+void printBuffer(float* buffer, size_t startLen, size_t endLen)
+{
+  for (size_t item = startLen; item < endLen; item++)
+  {
+    Serial.print(buffer[item]);
+    Serial.print(" ");
+  }
+  Serial.print("\n");
 }
 
 void setup()
@@ -96,7 +117,7 @@ void setup()
 
   clear(actualSpeeds, 0, bufferLen * bufferNum * motorNum);
   clear(actualSpeedsLen, 0, motorNum);
-  clear(actualSpeedAvgs, 0, bufferNum * motorNum);
+  clear(metricBuffer, 0, bufferNum * motorNum);
 }
 
 void loop()
@@ -109,7 +130,7 @@ void loop()
   {
     if (justUpdated)
     {
-      if (currentUpdateNum >= updateThreshold)
+      if (currentUpdateNums[motor] >= updateThreshold)
       {
         if (currentBuffer[motor] < bufferNum && actualSpeedsLen[motor] < bufferLen)
         {
@@ -120,7 +141,8 @@ void loop()
         if (actualSpeedsLen[motor] >= bufferLen)
         {
           size_t startIndex = motor * bufferNum * bufferLen + currentBuffer[motor] * bufferLen;
-          actualSpeedAvgs[motor * bufferNum + currentBuffer[motor]] = average(actualSpeeds, startIndex, startIndex + bufferLen);
+          printBuffer(actualSpeeds, startIndex, startIndex + bufferLen);
+          metricBuffer[motor * bufferNum + currentBuffer[motor]] = averageError(actualSpeeds, startIndex, startIndex + bufferLen);
           actualSpeedsLen[motor] = 0;
           currentBuffer[motor]++;
 
@@ -128,35 +150,30 @@ void loop()
           {
             float proportional = proportionalCoefficients[motor] + coefficientGain[motor] * gainDirection[currentBuffer[motor]];
             motors.setPid(proportional, integralCoefficients[motor], derivativeCoefficients[motor], motor);
-            reset();
+            reset(motor);
           }
         }
         if (currentBuffer[motor] >= bufferNum)
         {
-          float errors[bufferNum];
-          for (size_t buffer = 0; buffer < bufferNum; buffer++)
-          {
-            errors[buffer] = targetSpeed - actualSpeedAvgs[motor * bufferNum + buffer];
-          }
-
-          int direction = gainDirection[minIndex(errors, 0, bufferNum)];
+          size_t startIndex = motor * bufferNum;
+          int direction = gainDirection[minIndex(metricBuffer, startIndex, startIndex + bufferNum) - startIndex];
           proportionalCoefficients[motor] += coefficientGain[motor] * direction;
           coefficientGain[motor] /= 2;
 
           currentBuffer[motor] = 0;
           actualSpeedsLen[motor] = 0;
 
-          size_t startIndex = motor * bufferNum * bufferLen;
+          startIndex = motor * bufferNum * bufferLen;
           clear(actualSpeeds, startIndex, startIndex + bufferNum * bufferLen);
           startIndex = motor * bufferNum;
-          clear(actualSpeedAvgs, startIndex, startIndex + bufferNum);
+          clear(metricBuffer, startIndex, startIndex + bufferNum);
 
           float proportional = proportionalCoefficients[motor] + coefficientGain[motor] * gainDirection[currentBuffer[motor]];
           motors.setPid(proportional, integralCoefficients[motor], derivativeCoefficients[motor], motor);
-          reset();
+          reset(motor);
         }
       }
-      currentUpdateNum++;
+      currentUpdateNums[motor]++;
     }
   }
 
