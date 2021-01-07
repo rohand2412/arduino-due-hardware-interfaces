@@ -12,20 +12,21 @@ GND         -----  BLACK
 
 ==========================*/
 
-//45 - min degree
-//135 - max degree
-Servo_Wrapper myservo(58, 138);
+const unsigned int LOWER_BOUND = 40;
+const unsigned int UPPER_BOUND = 135;
+const unsigned int BOUND_DIF = UPPER_BOUND - LOWER_BOUND;
+Servo_Wrapper myservo(LOWER_BOUND, UPPER_BOUND);
 
-int pos = 0;
+unsigned int pos = 0;
 void sweepservo()
 {
-  for (pos = 0; pos <= 80; pos += 1)
+  for (pos = 0; pos <= BOUND_DIF; pos += 1)
   {
     myservo.write(pos);
     Serial.println(myservo.read());
     delay(30);
   }
-  for (pos = 80; pos >= 0; pos -= 1)
+  for (pos = BOUND_DIF; pos <= BOUND_DIF && pos >= 0; pos -= 1)
   {
     myservo.write(pos);
     Serial.println(myservo.read());
@@ -40,9 +41,8 @@ void setup()
   while (!Serial)
     ;
   delay(300);
-  //9 - signal pin, 
-  //553 and 2520 - min/max PWM signal range 
-  //from servocity.com
+
+  //510 and 2520 - min/max PWM signal range 
   myservo.attach(Servo_Wrapper::SERVO_S2, 510, 2520);
 }
 
