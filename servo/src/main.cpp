@@ -43,7 +43,7 @@ void setup()
   //9 - signal pin, 
   //553 and 2520 - min/max PWM signal range 
   //from servocity.com
-  myservo.attach(10, 510, 2520);
+  myservo.attach(Servo_Wrapper::SERVO_S2, 510, 2520);
 }
 
 void loop() 
