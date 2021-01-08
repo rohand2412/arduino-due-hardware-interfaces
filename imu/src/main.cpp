@@ -1,43 +1,42 @@
-#include <Arduino.h>
-#include <IMU_Wrapper.h>
-
-/*==========================
-
-Arduino Due ----- MPU6050
-3.3V        -----     VCC
-GND         -----     GND
-38          -----     INT
-(^Any Interrupt Pin Works)
-SDA(20)     -----     SDA
-SCL(21)     -----     SCL
-
-==========================*/
-
-IMU_Wrapper imu(45);    //Input whichever interrupt pin IMU is connected to
-
-void imuDmpDataReady()
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BNO055.h>
+#include <utility/imumaths.h>
+  
+Adafruit_BNO055 bno = Adafruit_BNO055(55);
+ 
+void setup(void) 
 {
-    imu.dmpDataReady();
+  Serial.begin(9600);
+  Serial.println("Orientation Sensor Test"); Serial.println("");
+  
+  /* Initialise the sensor */
+  if(!bno.begin())
+  {
+    /* There was a problem detecting the BNO055 ... check your connections */
+    Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
+    while(1);
+  }
+  
+  delay(1000);
+    
+  bno.setExtCrystalUse(true);
 }
-
-void setup() 
+ 
+void loop(void) 
 {
-    Serial.begin(115200);
-    while (!Serial);
-    delay(300);
-
-    imu.setOffsets(1451, -2164, 1053, -32, 11, 36);
-    imu.begin(imuDmpDataReady);
-}
-
-void loop() 
-{
-    imu.update();
-    Serial.print("ypr\t");
-    Serial.print(imu.getYaw());
-    Serial.print("\t");
-    Serial.print(imu.getPitch());
-    Serial.print("\t");
-    Serial.print(imu.getRoll());
-    Serial.println();
+  /* Get a new sensor event */ 
+  sensors_event_t event; 
+  bno.getEvent(&event);
+  
+  /* Display the floating point data */
+  Serial.print("X: ");
+  Serial.print(event.orientation.x, 4);
+  Serial.print("\tY: ");
+  Serial.print(event.orientation.y, 4);
+  Serial.print("\tZ: ");
+  Serial.print(event.orientation.z, 4);
+  Serial.println("");
+  
+  delay(100);
 }
