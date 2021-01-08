@@ -143,6 +143,47 @@ void displaySensorOffsets(const adafruit_bno055_offsets_t &calibData)
     Serial.print(calibData.mag_radius);
 }
 
+/**************************************************************************/
+/*
+    Get the raw calibration offset and radius data
+    */
+/**************************************************************************/
+adafruit_bno055_offsets_t getSensorOffsets()
+{
+    sensors_event_t event;
+    bno.getEvent(&event);
+    /* always recal the mag as It goes out of calibration very often */
+    Serial.println("Please Calibrate Sensor: ");
+    while (!bno.isFullyCalibrated())
+    {
+        bno.getEvent(&event);
+
+        Serial.print("X: ");
+        Serial.print(event.orientation.x, 4);
+        Serial.print("\tY: ");
+        Serial.print(event.orientation.y, 4);
+        Serial.print("\tZ: ");
+        Serial.print(event.orientation.z, 4);
+
+        /* Optional: Display calibration status */
+        displayCalStatus();
+
+        /* New line for the next sample */
+        Serial.println("");
+
+        /* Wait the specified delay before requesting new data */
+        delay(BNO055_SAMPLERATE_DELAY_MS);
+    }
+
+    Serial.println("\nFully calibrated!");
+
+    //Fetch results
+    adafruit_bno055_offsets_t newCalib;
+    bno.getSensorOffsets(newCalib);
+
+    //Return offsets
+    return newCalib;
+}
 
 /**************************************************************************/
 /*
@@ -172,37 +213,10 @@ void setup(void)
    /* Crystal must be configured AFTER loading calibration data into BNO055. */
     bno.setExtCrystalUse(true);
 
-    sensors_event_t event;
-    bno.getEvent(&event);
-    /* always recal the mag as It goes out of calibration very often */
-    Serial.println("Please Calibrate Sensor: ");
-    while (!bno.isFullyCalibrated())
-    {
-        bno.getEvent(&event);
-
-        Serial.print("X: ");
-        Serial.print(event.orientation.x, 4);
-        Serial.print("\tY: ");
-        Serial.print(event.orientation.y, 4);
-        Serial.print("\tZ: ");
-        Serial.print(event.orientation.z, 4);
-
-        /* Optional: Display calibration status */
-        displayCalStatus();
-
-        /* New line for the next sample */
-        Serial.println("");
-
-        /* Wait the specified delay before requesting new data */
-        delay(BNO055_SAMPLERATE_DELAY_MS);
-    }
-
-    Serial.println("\nFully calibrated!");
+    adafruit_bno055_offsets_t newCalib = getSensorOffsets();
     Serial.println("--------------------------------");
     Serial.println("Calibration Results: ");
-    adafruit_bno055_offsets_t newCalib;
-    bno.getSensorOffsets(newCalib);
     displaySensorOffsets(newCalib);
 }
 
-void loop() {};
+void loop(){};
