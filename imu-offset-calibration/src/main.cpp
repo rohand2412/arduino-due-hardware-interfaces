@@ -192,6 +192,12 @@ adafruit_bno055_offsets_t getSensorOffsets()
 /**************************************************************************/
 void setup(void)
 {
+    /* Configure pins */
+    const unsigned int RST = 22;
+    pinMode(RST, OUTPUT);
+    digitalWrite(RST, HIGH);
+
+    /* Initalize serial */
     Serial.begin(115200);
     delay(1000);
     Serial.println("Orientation Sensor Test"); Serial.println("");
@@ -210,13 +216,25 @@ void setup(void)
     /* Optional: Display current status */
     displaySensorStatus();
 
-   /* Crystal must be configured AFTER loading calibration data into BNO055. */
-    bno.setExtCrystalUse(true);
+    const size_t frames = 10;
+    adafruit_bno055_offsets_t calibs[frames];
+    for (size_t frame = 0; frame < frames; frame++)
+    {
+        digitalWrite(RST, LOW);
+        delay(1);
+        digitalWrite(RST, HIGH);
+        delay(800);
 
-    adafruit_bno055_offsets_t newCalib = getSensorOffsets();
+        /* Crystal must be configured AFTER loading calibration data into BNO055. */
+        bno.setExtCrystalUse(true);
+
+        calibs[frame] = getSensorOffsets();
+        Serial.println("--------------------------------");
+    }
+
     Serial.println("--------------------------------");
     Serial.println("Calibration Results: ");
-    displaySensorOffsets(newCalib);
+    displaySensorOffsets(calibs[0]);
 }
 
 void loop(){};
