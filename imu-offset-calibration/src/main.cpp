@@ -1,223 +1,295 @@
-/* =========================
-Not our code; solely example code for calculating 
-offsets for the mpu6050's accelerometer and gyroscope
-==========================*/
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BNO055.h>
+#include <imumaths.h>
+#include <EEPROM.h>
 
-#include <Arduino.h>
-// Arduino sketch that returns calibration offsets for MPU6050 
-//   Version 1.1  (31th January 2014)
-// Done by Luis Ródenas <luisrodenaslorda@gmail.com>
-// Based on the I2Cdev library and previous work by Jeff Rowberg <jeff@rowberg.net>
-// Updates (of the library) should (hopefully) always be available at https://github.com/jrowberg/i2cdevlib
+/* This driver uses the Adafruit unified sensor library (Adafruit_Sensor),
+   which provides a common 'type' for sensor data and some helper functions.
 
-// These offsets were meant to calibrate MPU6050's internal DMP, but can be also useful for reading sensors. 
-// The effect of temperature has not been taken into account so I can't promise that it will work if you 
-// calibrate indoors and then use it outdoors. Best is to calibrate and use at the same room temperature.
+   To use this driver you will also need to download the Adafruit_Sensor
+   library and include it in your libraries folder.
 
-/* ==========  LICENSE  ==================================
- I2Cdev device library code is placed under the MIT license
- Copyright (c) 2011 Jeff Rowberg
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
- =========================================================
- */
+   You should also assign a unique ID to this sensor for use with
+   the Adafruit Sensor API so that you can identify this particular
+   sensor in any data logs, etc.  To assign a unique ID, simply
+   provide an appropriate value in the constructor below (12345
+   is used by default in this example).
 
-// I2Cdev and MPU6050 must be installed as libraries
-#include "I2Cdev.h"
-#include "MPU6050.h"
-#include "Wire.h"
+   Connections
+   ===========
+   Connect SCL to analog 5
+   Connect SDA to analog 4
+   Connect VDD to 3-5V DC
+   Connect GROUND to common ground
 
-///////////////////////////////////   CONFIGURATION   /////////////////////////////
-//Change this 3 variables if you want to fine tune the skecth to your needs.
-int buffersize=1000;     //Amount of readings used to average, make it higher to get more precision but sketch will be slower  (default:1000)
-int acel_deadzone=8;     //Acelerometer error allowed, make it lower to get more precision, but sketch may not converge  (default:8)
-int giro_deadzone=1;     //Giro error allowed, make it lower to get more precision, but sketch may not converge  (default:1)
+   History
+   =======
+   2015/MAR/03  - First release (KTOWN)
+   2015/AUG/27  - Added calibration and system status helpers
+   2015/NOV/13  - Added calibration save and restore
+   */
 
-// default I2C address is 0x68
-// specific I2C addresses may be passed as a parameter here
-// AD0 low = 0x68 (default for InvenSense evaluation board)
-// AD0 high = 0x69
-//MPU6050 accelgyro;
-MPU6050 accelgyro(0x68); // <-- use for AD0 high
+/* Set the delay between fresh samples */
+#define BNO055_SAMPLERATE_DELAY_MS (100)
 
-int16_t ax, ay, az,gx, gy, gz;
+// Check I2C device address and correct line below (by default address is 0x29 or 0x28)
+//                                   id, address
+Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28);
 
-int mean_ax,mean_ay,mean_az,mean_gx,mean_gy,mean_gz,state=0;
-int ax_offset,ay_offset,az_offset,gx_offset,gy_offset,gz_offset;
+/**************************************************************************/
+/*
+    Displays some basic information on this sensor from the unified
+    sensor API sensor_t type (see Adafruit_Sensor for more information)
+    */
+/**************************************************************************/
+void displaySensorDetails(void)
+{
+    sensor_t sensor;
+    bno.getSensor(&sensor);
+    Serial.println("------------------------------------");
+    Serial.print("Sensor:       "); Serial.println(sensor.name);
+    Serial.print("Driver Ver:   "); Serial.println(sensor.version);
+    Serial.print("Unique ID:    "); Serial.println(sensor.sensor_id);
+    Serial.print("Max Value:    "); Serial.print(sensor.max_value); Serial.println(" xxx");
+    Serial.print("Min Value:    "); Serial.print(sensor.min_value); Serial.println(" xxx");
+    Serial.print("Resolution:   "); Serial.print(sensor.resolution); Serial.println(" xxx");
+    Serial.println("------------------------------------");
+    Serial.println("");
+    delay(500);
+}
 
-///////////////////////////////////   FUNCTIONS   ////////////////////////////////////
-void meansensors(){
-  long i=0,buff_ax=0,buff_ay=0,buff_az=0,buff_gx=0,buff_gy=0,buff_gz=0;
+/**************************************************************************/
+/*
+    Display some basic info about the sensor status
+    */
+/**************************************************************************/
+void displaySensorStatus(void)
+{
+    /* Get the system status values (mostly for debugging purposes) */
+    uint8_t system_status, self_test_results, system_error;
+    system_status = self_test_results = system_error = 0;
+    bno.getSystemStatus(&system_status, &self_test_results, &system_error);
 
-  while (i<(buffersize+101)){
-    // read raw accel/gyro measurements from device
-    accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
-    
-    if (i>100 && i<=(buffersize+100)){ //First 100 measures are discarded
-      buff_ax=buff_ax+ax;
-      buff_ay=buff_ay+ay;
-      buff_az=buff_az+az;
-      buff_gx=buff_gx+gx;
-      buff_gy=buff_gy+gy;
-      buff_gz=buff_gz+gz;
+    /* Display the results in the Serial Monitor */
+    Serial.println("");
+    Serial.print("System Status: 0x");
+    Serial.println(system_status, HEX);
+    Serial.print("Self Test:     0x");
+    Serial.println(self_test_results, HEX);
+    Serial.print("System Error:  0x");
+    Serial.println(system_error, HEX);
+    Serial.println("");
+    delay(500);
+}
+
+/**************************************************************************/
+/*
+    Display sensor calibration status
+    */
+/**************************************************************************/
+void displayCalStatus(void)
+{
+    /* Get the four calibration values (0..3) */
+    /* Any sensor data reporting 0 should be ignored, */
+    /* 3 means 'fully calibrated" */
+    uint8_t system, gyro, accel, mag;
+    system = gyro = accel = mag = 0;
+    bno.getCalibration(&system, &gyro, &accel, &mag);
+
+    /* The data should be ignored until the system calibration is > 0 */
+    Serial.print("\t");
+    if (!system)
+    {
+        Serial.print("! ");
     }
-    if (i==(buffersize+100)){
-      mean_ax=buff_ax/buffersize;
-      mean_ay=buff_ay/buffersize;
-      mean_az=buff_az/buffersize;
-      mean_gx=buff_gx/buffersize;
-      mean_gy=buff_gy/buffersize;
-      mean_gz=buff_gz/buffersize;
+
+    /* Display the individual values */
+    Serial.print("Sys:");
+    Serial.print(system, DEC);
+    Serial.print(" G:");
+    Serial.print(gyro, DEC);
+    Serial.print(" A:");
+    Serial.print(accel, DEC);
+    Serial.print(" M:");
+    Serial.print(mag, DEC);
+}
+
+/**************************************************************************/
+/*
+    Display the raw calibration offset and radius data
+    */
+/**************************************************************************/
+void displaySensorOffsets(const adafruit_bno055_offsets_t &calibData)
+{
+    Serial.print("Accelerometer: ");
+    Serial.print(calibData.accel_offset_x); Serial.print(" ");
+    Serial.print(calibData.accel_offset_y); Serial.print(" ");
+    Serial.print(calibData.accel_offset_z); Serial.print(" ");
+
+    Serial.print("\nGyro: ");
+    Serial.print(calibData.gyro_offset_x); Serial.print(" ");
+    Serial.print(calibData.gyro_offset_y); Serial.print(" ");
+    Serial.print(calibData.gyro_offset_z); Serial.print(" ");
+
+    Serial.print("\nMag: ");
+    Serial.print(calibData.mag_offset_x); Serial.print(" ");
+    Serial.print(calibData.mag_offset_y); Serial.print(" ");
+    Serial.print(calibData.mag_offset_z); Serial.print(" ");
+
+    Serial.print("\nAccel Radius: ");
+    Serial.print(calibData.accel_radius);
+
+    Serial.print("\nMag Radius: ");
+    Serial.print(calibData.mag_radius);
+}
+
+
+/**************************************************************************/
+/*
+    Arduino setup function (automatically called at startup)
+    */
+/**************************************************************************/
+void setup(void)
+{
+    Serial.begin(115200);
+    delay(1000);
+    Serial.println("Orientation Sensor Test"); Serial.println("");
+
+    /* Initialise the sensor */
+    if (!bno.begin())
+    {
+        /* There was a problem detecting the BNO055 ... check your connections */
+        Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
+        while (1);
     }
-    i++;
-    delay(2); //Needed so we don't get repeated measures
-  }
+
+    int eeAddress = 0;
+    long bnoID;
+    bool foundCalib = false;
+
+    EEPROM.get(eeAddress, bnoID);
+
+    adafruit_bno055_offsets_t calibrationData;
+    sensor_t sensor;
+
+    /*
+    *  Look for the sensor's unique ID at the beginning oF EEPROM.
+    *  This isn't foolproof, but it's better than nothing.
+    */
+    bno.getSensor(&sensor);
+    if (bnoID != sensor.sensor_id)
+    {
+        Serial.println("\nNo Calibration Data for this sensor exists in EEPROM");
+        delay(500);
+    }
+    else
+    {
+        Serial.println("\nFound Calibration for this sensor in EEPROM.");
+        eeAddress += sizeof(long);
+        EEPROM.get(eeAddress, calibrationData);
+
+        displaySensorOffsets(calibrationData);
+
+        Serial.println("\n\nRestoring Calibration data to the BNO055...");
+        bno.setSensorOffsets(calibrationData);
+
+        Serial.println("\n\nCalibration data loaded into BNO055");
+        foundCalib = true;
+    }
+
+    delay(1000);
+
+    /* Display some basic information on this sensor */
+    displaySensorDetails();
+
+    /* Optional: Display current status */
+    displaySensorStatus();
+
+   /* Crystal must be configured AFTER loading calibration data into BNO055. */
+    bno.setExtCrystalUse(true);
+
+    sensors_event_t event;
+    bno.getEvent(&event);
+    /* always recal the mag as It goes out of calibration very often */
+    if (foundCalib){
+        Serial.println("Move sensor slightly to calibrate magnetometers");
+        while (!bno.isFullyCalibrated())
+        {
+            bno.getEvent(&event);
+            delay(BNO055_SAMPLERATE_DELAY_MS);
+        }
+    }
+    else
+    {
+        Serial.println("Please Calibrate Sensor: ");
+        while (!bno.isFullyCalibrated())
+        {
+            bno.getEvent(&event);
+
+            Serial.print("X: ");
+            Serial.print(event.orientation.x, 4);
+            Serial.print("\tY: ");
+            Serial.print(event.orientation.y, 4);
+            Serial.print("\tZ: ");
+            Serial.print(event.orientation.z, 4);
+
+            /* Optional: Display calibration status */
+            displayCalStatus();
+
+            /* New line for the next sample */
+            Serial.println("");
+
+            /* Wait the specified delay before requesting new data */
+            delay(BNO055_SAMPLERATE_DELAY_MS);
+        }
+    }
+
+    Serial.println("\nFully calibrated!");
+    Serial.println("--------------------------------");
+    Serial.println("Calibration Results: ");
+    adafruit_bno055_offsets_t newCalib;
+    bno.getSensorOffsets(newCalib);
+    displaySensorOffsets(newCalib);
+
+    Serial.println("\n\nStoring calibration data to EEPROM...");
+
+    eeAddress = 0;
+    bno.getSensor(&sensor);
+    bnoID = sensor.sensor_id;
+
+    EEPROM.put(eeAddress, bnoID);
+
+    eeAddress += sizeof(long);
+    EEPROM.put(eeAddress, newCalib);
+    Serial.println("Data stored to EEPROM.");
+
+    Serial.println("\n--------------------------------\n");
+    delay(500);
 }
 
-void calibration(){
-  ax_offset=-mean_ax/8;
-  ay_offset=-mean_ay/8;
-  az_offset=(16384-mean_az)/8;
-
-  gx_offset=-mean_gx/4;
-  gy_offset=-mean_gy/4;
-  gz_offset=-mean_gz/4;
-  while (1){
-    int ready=0;
-    accelgyro.setXAccelOffset(ax_offset);
-    accelgyro.setYAccelOffset(ay_offset);
-    accelgyro.setZAccelOffset(az_offset);
-
-    accelgyro.setXGyroOffset(gx_offset);
-    accelgyro.setYGyroOffset(gy_offset);
-    accelgyro.setZGyroOffset(gz_offset);
-
-    meansensors();
-    Serial.println("...");
-
-    if (abs(mean_ax)<=acel_deadzone) ready++;
-    else ax_offset=ax_offset-mean_ax/acel_deadzone;
-
-    if (abs(mean_ay)<=acel_deadzone) ready++;
-    else ay_offset=ay_offset-mean_ay/acel_deadzone;
-
-    if (abs(16384-mean_az)<=acel_deadzone) ready++;
-    else az_offset=az_offset+(16384-mean_az)/acel_deadzone;
-
-    if (abs(mean_gx)<=giro_deadzone) ready++;
-    else gx_offset=gx_offset-mean_gx/(giro_deadzone+1);
-
-    if (abs(mean_gy)<=giro_deadzone) ready++;
-    else gy_offset=gy_offset-mean_gy/(giro_deadzone+1);
-
-    if (abs(mean_gz)<=giro_deadzone) ready++;
-    else gz_offset=gz_offset-mean_gz/(giro_deadzone+1);
-
-    if (ready==6) break;
-  }
-}
-
-///////////////////////////////////   SETUP   ////////////////////////////////////
-void setup() {
-  // join I2C bus (I2Cdev library doesn't do this automatically)
-  Wire.begin();
-  // COMMENT NEXT LINE IF YOU ARE USING ARDUINO DUE
-  // TWBR = 24; // 400kHz I2C clock (200kHz if CPU is 8MHz). Leonardo measured 250kHz.
-
-  // initialize serial communication
-  Serial.begin(115200);
-  delay(300);
-
-  // initialize device
-  accelgyro.initialize();
-
-  // wait for ready
-  while (Serial.available() && Serial.read()); // empty buffer
-  while (!Serial.available()){
-    Serial.println(F("Send any character to start sketch.\n"));
-    delay(1500);
-  }                
-  while (Serial.available() && Serial.read()); // empty buffer again
-
-  // start message
-  Serial.println("\nMPU6050 Calibration Sketch");
-  delay(2000);
-  Serial.println("\nYour MPU6050 should be placed in horizontal position, with package letters facing up. \nDon't touch it until you see a finish message.\n");
-  delay(3000);
-  // verify connection
-  Serial.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
-  delay(1000);
-  // reset offsets
-  accelgyro.setXAccelOffset(0);
-  accelgyro.setYAccelOffset(0);
-  accelgyro.setZAccelOffset(0);
-  accelgyro.setXGyroOffset(0);
-  accelgyro.setYGyroOffset(0);
-  accelgyro.setZGyroOffset(0);
-}
-
-///////////////////////////////////   LOOP   ////////////////////////////////////
 void loop() {
-  if (state==0){
-    Serial.println("\nReading sensors for first time...");
-    meansensors();
-    state++;
-    delay(1000);
-  }
+    /* Get a new sensor event */
+    sensors_event_t event;
+    bno.getEvent(&event);
 
-  if (state==1) {
-    Serial.println("\nCalculating offsets...");
-    calibration();
-    state++;
-    delay(1000);
-  }
+    /* Display the floating point data */
+    Serial.print("X: ");
+    Serial.print(event.orientation.x, 4);
+    Serial.print("\tY: ");
+    Serial.print(event.orientation.y, 4);
+    Serial.print("\tZ: ");
+    Serial.print(event.orientation.z, 4);
 
-  if (state==2) {
-    meansensors();
-    Serial.println("\nFINISHED!");
-    Serial.print("\nSensor readings with offsets:\t");
-    Serial.print(mean_ax); 
-    Serial.print("\t");
-    Serial.print(mean_ay); 
-    Serial.print("\t");
-    Serial.print(mean_az); 
-    Serial.print("\t");
-    Serial.print(mean_gx); 
-    Serial.print("\t");
-    Serial.print(mean_gy); 
-    Serial.print("\t");
-    Serial.println(mean_gz);
-    Serial.print("Your offsets:\t");
-    Serial.print(ax_offset); 
-    Serial.print("\t");
-    Serial.print(ay_offset); 
-    Serial.print("\t");
-    Serial.print(az_offset); 
-    Serial.print("\t");
-    Serial.print(gx_offset); 
-    Serial.print("\t");
-    Serial.print(gy_offset); 
-    Serial.print("\t");
-    Serial.println(gz_offset); 
-    Serial.println("\nData is printed as: acelX acelY acelZ giroX giroY giroZ");
-    Serial.println("Check that your sensor readings are close to 0 0 16384 0 0 0");
-    Serial.println("If calibration was succesful write down your offsets so you can set them in your projects using something similar to mpu.setXAccelOffset(youroffset)");
-    while (1);
-  }
+    /* Optional: Display calibration status */
+    displayCalStatus();
+
+    /* Optional: Display sensor status (debug only) */
+    //displaySensorStatus();
+
+    /* New line for the next sample */
+    Serial.println("");
+
+    /* Wait the specified delay before requesting new data */
+    delay(BNO055_SAMPLERATE_DELAY_MS);
 }
