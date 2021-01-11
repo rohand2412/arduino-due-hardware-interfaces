@@ -248,7 +248,7 @@ adafruit_bno055_offsets_t avgSensorOffsets(adafruit_bno055_offsets_t* buffer, in
 void setup(void)
 {
     /* Configure pins */
-    const unsigned int RST = 22;
+    const unsigned int RST = 43;
     pinMode(RST, OUTPUT);
     digitalWrite(RST, HIGH);
 
