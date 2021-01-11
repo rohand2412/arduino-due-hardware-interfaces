@@ -141,6 +141,8 @@ void displaySensorOffsets(const adafruit_bno055_offsets_t &calibData)
 
     Serial.print("\nMag Radius: ");
     Serial.print(calibData.mag_radius);
+
+    Serial.print("\n");
 }
 
 /**************************************************************************/
@@ -187,6 +189,59 @@ adafruit_bno055_offsets_t getSensorOffsets()
 
 /**************************************************************************/
 /*
+    Average the raw calibration offset and radius data
+    */
+/**************************************************************************/
+adafruit_bno055_offsets_t avgSensorOffsets(adafruit_bno055_offsets_t* buffer, int len)
+{
+    adafruit_bno055_offsets_t average;
+
+    average.accel_offset_x = 0;
+    average.accel_offset_y = 0;
+    average.accel_offset_z = 0;
+    average.mag_offset_x = 0;
+    average.mag_offset_y = 0;
+    average.mag_offset_z = 0;
+    average.gyro_offset_x = 0;
+    average.gyro_offset_y = 0;
+    average.gyro_offset_z = 0;
+    average.accel_radius = 0;
+    average.mag_radius = 0;
+
+    for (size_t i = 0; i < len; i++)
+    {
+        average.accel_offset_x += buffer[i].accel_offset_x;
+        average.accel_offset_y += buffer[i].accel_offset_y;
+        average.accel_offset_z += buffer[i].accel_offset_z;
+        average.mag_offset_x += buffer[i].mag_offset_x;
+        average.mag_offset_y += buffer[i].mag_offset_y;
+        average.mag_offset_z += buffer[i].mag_offset_z;
+        average.gyro_offset_x += buffer[i].gyro_offset_x;
+        average.gyro_offset_y += buffer[i].gyro_offset_y;
+        average.gyro_offset_z += buffer[i].gyro_offset_z;
+        average.accel_radius += buffer[i].accel_radius;
+        average.mag_radius += buffer[i].mag_radius;
+    }
+
+    displaySensorOffsets(average);
+
+    average.accel_offset_x /= len;
+    average.accel_offset_y /= len;
+    average.accel_offset_z /= len;
+    average.mag_offset_x /= len;
+    average.mag_offset_y /= len;
+    average.mag_offset_z /= len;
+    average.gyro_offset_x /= len;
+    average.gyro_offset_y /= len;
+    average.gyro_offset_z /= len;
+    average.accel_radius /= len;
+    average.mag_radius /= len;
+
+    return average;
+}
+
+/**************************************************************************/
+/*
     Arduino setup function (automatically called at startup)
     */
 /**************************************************************************/
@@ -216,7 +271,7 @@ void setup(void)
     /* Optional: Display current status */
     displaySensorStatus();
 
-    const size_t frames = 10;
+    const size_t frames = 5;
     adafruit_bno055_offsets_t calibs[frames];
     for (size_t frame = 0; frame < frames; frame++)
     {
@@ -232,9 +287,16 @@ void setup(void)
         Serial.println("--------------------------------");
     }
 
-    Serial.println("--------------------------------");
     Serial.println("Calibration Results: ");
-    displaySensorOffsets(calibs[0]);
+    adafruit_bno055_offsets_t average = avgSensorOffsets(calibs, frames);
+    displaySensorOffsets(average);
+
+    Serial.println("--------------------------------");
+    Serial.println("Individual Results: ");
+    for (size_t frame = 0; frame < frames; frame++)
+    {
+        displaySensorOffsets(calibs[frame]);
+    }
 }
 
 void loop(){};
