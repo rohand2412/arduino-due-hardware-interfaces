@@ -35,7 +35,60 @@
 
 // Check I2C device address and correct line below (by default address is 0x29 or 0x28)
 //                                   id, address
-Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28);
+Adafruit_BNO055 bno = Adafruit_BNO055(55);
+
+/**************************************************************************/
+/*
+    Average the absolute values of the offsets and choose the most popular sign
+    */
+/**************************************************************************/
+class avgSign
+{
+  private:
+    unsigned int *_ints;
+    bool *_signs;
+    size_t _len;
+  
+  public:
+    avgSign(size_t len)
+    {
+      _len = len;
+      _ints = new unsigned int[_len];
+      _signs = new bool[_len];
+
+      for (size_t num = 0; num < _len; num++)
+      {
+        _ints[num] = 0;
+        _signs[num] = 1;
+      }
+    }
+
+    void setInt(size_t index, int16_t val)
+    {
+      _ints[index] = abs(val);
+      _signs[index] = !(val < 0);
+    }
+
+    int16_t getAvg()
+    {
+      int avg = Utilities::average(_ints, _len);
+
+      unsigned int numNeg = 0;
+      for (size_t num = 0; num < _len; num++)
+      {
+        numNeg += !_signs[num];
+      }
+
+      if (numNeg > _len / 2)
+      {
+        return avg * -1;
+      }
+      else
+      {
+        return avg;
+      }
+    }
+};
 
 /**************************************************************************/
 /*
@@ -203,48 +256,46 @@ adafruit_bno055_offsets_t getSensorOffsets()
 /**************************************************************************/
 adafruit_bno055_offsets_t avgSensorOffsets(adafruit_bno055_offsets_t* buffer, int len)
 {
-    adafruit_bno055_offsets_t average;
+    avgSign accel_offset_x(len);
+    avgSign accel_offset_y(len);
+    avgSign accel_offset_z(len);
+    avgSign mag_offset_x(len);
+    avgSign mag_offset_y(len);
+    avgSign mag_offset_z(len);
+    avgSign gyro_offset_x(len);
+    avgSign gyro_offset_y(len);
+    avgSign gyro_offset_z(len);
+    avgSign accel_radius(len);
+    avgSign mag_radius(len);
 
-    average.accel_offset_x = 0;
-    average.accel_offset_y = 0;
-    average.accel_offset_z = 0;
-    average.mag_offset_x = 0;
-    average.mag_offset_y = 0;
-    average.mag_offset_z = 0;
-    average.gyro_offset_x = 0;
-    average.gyro_offset_y = 0;
-    average.gyro_offset_z = 0;
-    average.accel_radius = 0;
-    average.mag_radius = 0;
-
-    for (size_t i = 0; i < len; i++)
+    for (size_t i = 0; i < unsigned(len); i++)
     {
-        average.accel_offset_x += buffer[i].accel_offset_x;
-        average.accel_offset_y += buffer[i].accel_offset_y;
-        average.accel_offset_z += buffer[i].accel_offset_z;
-        average.mag_offset_x += buffer[i].mag_offset_x;
-        average.mag_offset_y += buffer[i].mag_offset_y;
-        average.mag_offset_z += buffer[i].mag_offset_z;
-        average.gyro_offset_x += buffer[i].gyro_offset_x;
-        average.gyro_offset_y += buffer[i].gyro_offset_y;
-        average.gyro_offset_z += buffer[i].gyro_offset_z;
-        average.accel_radius += buffer[i].accel_radius;
-        average.mag_radius += buffer[i].mag_radius;
+        accel_offset_x.setInt(i, buffer[i].accel_offset_x);
+        accel_offset_y.setInt(i, buffer[i].accel_offset_y);
+        accel_offset_z.setInt(i, buffer[i].accel_offset_z);
+        mag_offset_x.setInt(i, buffer[i].mag_offset_x);
+        mag_offset_y.setInt(i, buffer[i].mag_offset_y);
+        mag_offset_z.setInt(i, buffer[i].mag_offset_z);
+        gyro_offset_x.setInt(i, buffer[i].gyro_offset_x);
+        gyro_offset_y.setInt(i, buffer[i].gyro_offset_y);
+        gyro_offset_z.setInt(i, buffer[i].gyro_offset_z);
+        accel_radius.setInt(i, buffer[i].accel_radius);
+        mag_radius.setInt(i, buffer[i].mag_radius);
     }
 
-    displaySensorOffsets(average);
-
-    average.accel_offset_x /= len;
-    average.accel_offset_y /= len;
-    average.accel_offset_z /= len;
-    average.mag_offset_x /= len;
-    average.mag_offset_y /= len;
-    average.mag_offset_z /= len;
-    average.gyro_offset_x /= len;
-    average.gyro_offset_y /= len;
-    average.gyro_offset_z /= len;
-    average.accel_radius /= len;
-    average.mag_radius /= len;
+    adafruit_bno055_offsets_t average;
+  
+    average.accel_offset_x = accel_offset_x.getAvg();
+    average.accel_offset_y = accel_offset_y.getAvg();
+    average.accel_offset_z = accel_offset_z.getAvg();
+    average.mag_offset_x = mag_offset_x.getAvg();
+    average.mag_offset_y = mag_offset_y.getAvg();
+    average.mag_offset_z = mag_offset_z.getAvg();
+    average.gyro_offset_x = gyro_offset_x.getAvg();
+    average.gyro_offset_y = gyro_offset_y.getAvg();
+    average.gyro_offset_z = gyro_offset_z.getAvg();
+    average.accel_radius = accel_radius.getAvg();
+    average.mag_radius = mag_radius.getAvg();
 
     return average;
 }
