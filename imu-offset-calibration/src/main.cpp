@@ -2,6 +2,7 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <imumaths.h>
+#include <Utilities.h>
 
 /* This driver uses the Adafruit unified sensor library (Adafruit_Sensor),
    which provides a common 'type' for sensor data and some helper functions.
@@ -87,14 +88,15 @@ void displaySensorStatus(void)
     Display sensor calibration status
     */
 /**************************************************************************/
-void displayCalStatus(void)
+void displayCalStatus(const uint8_t& system, const uint8_t& gyro,
+                      const uint8_t& accel, const uint8_t& mag)
 {
     /* Get the four calibration values (0..3) */
     /* Any sensor data reporting 0 should be ignored, */
     /* 3 means 'fully calibrated" */
-    uint8_t system, gyro, accel, mag;
-    system = gyro = accel = mag = 0;
-    bno.getCalibration(&system, &gyro, &accel, &mag);
+    // uint8_t system, gyro, accel, mag;
+    // system = gyro = accel = mag = 0;
+    // bno.getCalibration(&system, &gyro, &accel, &mag);
 
     /* The data should be ignored until the system calibration is > 0 */
     Serial.print("\t");
@@ -156,7 +158,11 @@ adafruit_bno055_offsets_t getSensorOffsets()
     bno.getEvent(&event);
     /* always recal the mag as It goes out of calibration very often */
     Serial.println("Please Calibrate Sensor: ");
-    while (!bno.isFullyCalibrated())
+
+    uint8_t system, gyro, accel, mag;
+    system = gyro = accel = mag = 0;
+
+    while (!(system == 3 && gyro == 3 && accel == 3 && mag == 3))
     {
         bno.getEvent(&event);
 
@@ -167,14 +173,17 @@ adafruit_bno055_offsets_t getSensorOffsets()
         Serial.print("\tZ: ");
         Serial.print(event.orientation.z, 4);
 
+        /* Wait the specified delay before requesting new data */
+        delay(BNO055_SAMPLERATE_DELAY_MS);
+
         /* Optional: Display calibration status */
-        displayCalStatus();
+        bno.getCalibration(&system, &gyro, &accel, &mag);
+        displayCalStatus(system, gyro, accel, mag);
+        Serial.print(" R:");
+        Serial.print(!(system == 3 && gyro == 3 && accel == 3 && mag == 3));
 
         /* New line for the next sample */
         Serial.println("");
-
-        /* Wait the specified delay before requesting new data */
-        delay(BNO055_SAMPLERATE_DELAY_MS);
     }
 
     Serial.println("\nFully calibrated!");
