@@ -2,7 +2,7 @@
 #include <Wire.h>
 #include <IMU_Wrapper.h>
 
-IMU_Wrapper myImu;
+IMU_Wrapper myImu(43);
 
 /**************************************************************************/
 /*
@@ -13,6 +13,12 @@ void setup(void)
 {
   Serial.begin(115200);
   Serial.println("Orientation Sensor Test"); Serial.println("");
+
+  adafruit_bno055_offsets_t offsets{13, -48, -25,
+                                    -101, 127, 438,
+                                    -2, -2, 0,
+                                    1000, 835};
+  myImu.setOffsets(offsets);
 
   myImu.begin();
 

@@ -100,7 +100,7 @@ void setup(void)
 
     Serial.println("Orientation Sensor Test\n");
 
-    myImu.begin();
+    myImu.beginWithoutOffsets();
 
     /* Display some basic information on this sensor */
     myImu.displaySensorDetails();
