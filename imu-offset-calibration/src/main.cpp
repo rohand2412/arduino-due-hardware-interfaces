@@ -117,7 +117,7 @@ void setup(void)
         /* Crystal must be configured AFTER loading calibration data into BNO055. */
         myImu.setExtCrystalUse(true);
 
-        calibs[frame] = myImu.getOffsets();
+        calibs[frame] = myImu.generateOffsets();
         Serial.println("--------------------------------");
     }
 
