@@ -1,22 +1,16 @@
 #include <Arduino.h>
+#include <Wire.h>
+#include <Serial_Wrapper.h>
 
 void setup() 
 {
-  Serial.begin(115200);
-  while (!Serial)
-    ;
-  delay(300);
+    Serial_Wrapper::begin(750000, Serial);
 
-  Serial3.begin(115200);
-  while (!Serial3)
-    ;
-  delay(300);
+    Serial_Wrapper::begin(115200, Serial3);
 }
 
 void loop() 
 {
-  if (Serial3.available())
-  {
-    Serial.println(Serial3.read());
-  }
+    Serial.println("It works!");
+    Serial3.write('a');
 }
