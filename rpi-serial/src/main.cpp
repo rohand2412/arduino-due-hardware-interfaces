@@ -2,7 +2,7 @@
 #include <Wire.h>
 #include <Serial_Wrapper.h>
 
-const size_t bufferLen = 10;
+const size_t bufferLen = 256;
 uint8_t buffer[bufferLen];
 size_t dataLen = 0;
 
@@ -17,5 +17,9 @@ void setup()
 void loop() 
 {
     dataLen = Serial_Wrapper::receive(buffer, bufferLen);
-    Serial_Wrapper::send(buffer, dataLen);
+
+    if (dataLen != 0xFFFFFFFF) //!= -1
+    {
+        Serial_Wrapper::send(buffer, dataLen);
+    }
 }
