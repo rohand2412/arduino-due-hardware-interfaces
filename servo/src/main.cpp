@@ -12,7 +12,7 @@ GND         -----  BLACK
 
 ==========================*/
 
-const unsigned int LOWER_BOUND = 40;
+const unsigned int LOWER_BOUND = 45;
 const unsigned int UPPER_BOUND = 135;
 const unsigned int BOUND_DIF = UPPER_BOUND - LOWER_BOUND;
 Servo_Wrapper myservo(LOWER_BOUND, UPPER_BOUND);
@@ -43,10 +43,16 @@ void setup()
   delay(300);
 
   //510 and 2520 - min/max PWM signal range 
-  myservo.attach(Servo_Wrapper::SERVO_S2, 510, 2520);
+  //myservo.attach(Servo_Wrapper::SERVO_S2, 510, 2520);
+
+  myservo.attach(Servo_Wrapper::SERVO_S1);
 }
 
 void loop() 
 {
-  sweepservo();
+  //sweepservo();
+  myservo.write(15);
 }
+
+//Line - 35 deg
+//Evac - 15 deg
