@@ -43,9 +43,9 @@ void setup()
   delay(300);
 
   //510 and 2520 - min/max PWM signal range 
-  //myservo.attach(Servo_Wrapper::SERVO_S2, 510, 2520);
+  //myservo.attach(Servo_Wrapper::SERVO_S1, 510, 2520);
 
-  myservo.attach(Servo_Wrapper::SERVO_S1);
+  myservo.attach(Servo_Wrapper::SERVO_S2);
 }
 
 void loop() 
