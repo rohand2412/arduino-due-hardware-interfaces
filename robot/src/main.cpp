@@ -11,6 +11,8 @@ void ultrasonicRightISR() { robot.getUltrasonics().echoPinISR(Ultrasonic_Wrapper
 
 void ultrasonicBackISR() { robot.getUltrasonics().echoPinISR(Ultrasonic_Wrapper::ULTRASONIC_BACK); }
 
+int turnCount = 0;
+
 void setup() 
 {
     Serial_Wrapper::begin(115200, Serial);
@@ -55,8 +57,29 @@ void loop()
             break;
 
         case 35000 ... 64999:
+            Serial.print("isTurning: ");
+            Serial.print(robot.isTurning());
+            Serial.print("\t");
             robot.getIMU().displayOrientation();
             robot.getIMU().displayCalStatus();
+
+            if (!robot.isTurning())
+            {
+                if (!turnCount)
+                {
+                    robot.turn(90);
+                    turnCount++;
+                }
+                else if (turnCount == 1)
+                {
+                    robot.turn(-180);
+                    turnCount++;
+                }
+                else
+                {
+                    robot.run(0, 0);
+                }
+            }
             break;
 
         default:
