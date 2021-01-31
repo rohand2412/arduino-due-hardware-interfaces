@@ -1,37 +1,41 @@
 {
 	"folders": [
-		{
-			"path": ".."
-		},
-		{
-			"name": "rpi-serial",
-			"path": "../rpi-serial"
-		},
-		{
-			"name": "motor-shield",
-			"path": "../motor-shield"
-		},
-		{
-			"name": "servo",
-			"path": "../servo"
-		},
-		{
-			"name": "imu",
-			"path": "../imu"
-		},
-		{
-			"name": "imu-offset-calibration",
-			"path": "../imu-offset-calibration"
-		},
-		{
-			"name": "ultrasonic",
-			"path": "../ultrasonic"
-		},
-		{
-			"name": "encoder",
-			"path": "../encoder"
-		}
-	],
+        {
+            "path": ".."
+        },
+        {
+            "name": "rpi-serial",
+            "path": "../rpi-serial"
+        },
+        {
+            "name": "motor-shield",
+            "path": "../motor-shield"
+        },
+        {
+            "name": "servo",
+            "path": "../servo"
+        },
+        {
+            "name": "imu",
+            "path": "../imu"
+        },
+        {
+            "name": "imu-offset-calibration",
+            "path": "../imu-offset-calibration"
+        },
+        {
+            "name": "ultrasonic",
+            "path": "../ultrasonic"
+        },
+        {
+            "name": "encoder",
+            "path": "../encoder"
+        },
+        {
+            "name": "robot",
+            "path": "../robot"
+        }
+    ],
 	"settings": 
 	{
 		"files.autoSave": "onFocusChange",
