@@ -34,6 +34,10 @@
         {
             "name": "robot",
             "path": "../robot"
+        },
+        {
+            "name": "light-peripherals",
+            "path": "../light-peripherals"
         }
     ],
 	"settings": 
