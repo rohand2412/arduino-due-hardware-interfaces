@@ -1,9 +1,16 @@
 #include <Arduino.h>
+#include <Wire.h>
+#include <LightPeripherals.h>
 
-void setup() {
-  // put your setup code here, to run once:
+LED led(39);
+
+void setup() 
+{
+    led.begin();
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
+void loop() 
+{
+    led.toggle();
+    delay(250);
 }
