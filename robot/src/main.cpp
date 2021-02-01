@@ -13,6 +13,8 @@ void ultrasonicBackISR() { robot.getUltrasonics().echoPinISR(Ultrasonic_Wrapper:
 
 int turnCount = 0;
 
+bool drove = false;
+
 void setup() 
 {
     Serial_Wrapper::begin(115200, Serial);
@@ -79,6 +81,32 @@ void loop()
                 {
                     robot.run(0, 0);
                 }
+            }
+            break;
+
+        case 65000 ... 69750:
+            robot.getLED().toggle();
+            robot.getRGB_LED().toggle();
+            delay(250);
+            break;
+
+        case 70000 ... 89999:
+            Serial.print("isDrivingDistance: ");
+            Serial.print(robot.isDrivingDistance());
+            Serial.print("\tLeftCounts: ");
+            Serial.print(robot.getEncoders().getCount(Encoder_Wrapper::ENCODER_LEFT));
+            Serial.print("\tRightCounts: ");
+            Serial.print(robot.getEncoders().getCount(Encoder_Wrapper::ENCODER_RIGHT));
+            Serial.print("\n");
+
+            if (!drove)
+            {
+                robot.runDistance_CM(0.5, 30);
+                drove = true;
+            }
+            if (!robot.isDrivingDistance())
+            {
+                robot.getMotors().stop();
             }
             break;
 
