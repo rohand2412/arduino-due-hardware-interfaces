@@ -17,11 +17,11 @@ void setup()
   const size_t wrapperNum = 3;
   Encoder_Wrapper encoders[wrapperNum];
   unsigned int newEncoderPins[encoderNum * Encoder_Wrapper::PINS_PER_SENSOR] = {25, 23, 29, 27, 31, 33};
-  encoders[0].begin(newEncoderPins, encoderNum);
+  encoders[0].createSensor(newEncoderPins, encoderNum);
   unsigned int mixedEncoderPins[encoderNum * Encoder_Wrapper::PINS_PER_SENSOR] = {33, 31, 46, 44, 50, 48};
-  encoders[1].begin(mixedEncoderPins, encoderNum);
+  encoders[1].createSensor(mixedEncoderPins, encoderNum);
   unsigned int repeatedEncoderPins[encoderNum * Encoder_Wrapper::PINS_PER_SENSOR] = {29, 27, 25, 23, 44, 46};
-  encoders[2].begin(repeatedEncoderPins, encoderNum);
+  encoders[2].createSensor(repeatedEncoderPins, encoderNum);
 
   Serial.print("Total Number of Initialized Encoders: ");
   Serial.println(Encoder_Wrapper::getTotalSensorNum());
@@ -61,8 +61,8 @@ void loop()
     const size_t encoderNum = 2;
     unsigned int totalEncoderPins[encoderNum * Encoder_Wrapper::PINS_PER_SENSOR] = {46, 44, 50, 48};
     unsigned int localEncoderPins[encoderNum * Encoder_Wrapper::PINS_PER_SENSOR] = {44, 46, 48, 50};
-    totalEncoders.begin(totalEncoderPins, encoderNum);
-    localEncoders.begin(localEncoderPins, encoderNum);
+    totalEncoders.createSensor(totalEncoderPins, encoderNum);
+    localEncoders.createSensor(localEncoderPins, encoderNum);
     once = false;
   }
 
