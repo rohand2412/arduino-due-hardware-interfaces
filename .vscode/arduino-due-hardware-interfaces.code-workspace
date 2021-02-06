@@ -32,8 +32,8 @@
 			"path": "../encoder"
 		},
 		{
-			"name": "motor-pid-caibration",
-			"path": "../motor-pid-caibration"
+			"name": "motor-pwm-calibration",
+			"path": "../motor-pwm-calibration"
 		}
 	],
 	"settings": 
