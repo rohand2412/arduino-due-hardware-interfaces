@@ -21,7 +21,7 @@ void loop()
 
     if (dataLen != 0xFFFFFFFF) //!= -1
     {
-        for (size_t item = 0; item <= dataLen; item++)
+        for (size_t item = 0; item < dataLen; item++)
         {
             buffer_long[item] = buffer_uint8[item];
         }
