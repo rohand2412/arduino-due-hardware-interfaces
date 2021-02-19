@@ -3,8 +3,7 @@
 #include <Serial_Wrapper.h>
 
 const size_t bufferLen = 256;
-uint8_t buffer_uint8[bufferLen];
-long buffer_long[bufferLen];
+long buffer[bufferLen];
 size_t dataLen = 0;
 
 void setup() 
@@ -17,14 +16,10 @@ void setup()
 
 void loop() 
 {
-    dataLen = Serial_Wrapper::receive(buffer_uint8, bufferLen);
+    dataLen = Serial_Wrapper::receive(buffer, bufferLen);
 
     if (dataLen != 0xFFFFFFFF) //!= -1
     {
-        for (size_t item = 0; item < dataLen; item++)
-        {
-            buffer_long[item] = buffer_uint8[item];
-        }
-        Serial_Wrapper::send(buffer_long, dataLen);
+        Serial_Wrapper::send(buffer, dataLen);
     }
 }
