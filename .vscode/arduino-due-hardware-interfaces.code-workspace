@@ -38,6 +38,10 @@
         {
             "name": "light-peripherals",
             "path": "../light-peripherals"
+        },
+        {
+            "name": "button",
+            "path": "../button"
         }
     ],
 	"settings": 
