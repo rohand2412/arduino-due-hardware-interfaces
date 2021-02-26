@@ -1,44 +1,23 @@
 #include <Arduino.h>
+#include <Wire.h>
+#include <Button.h>
 
-const uint8_t buttonPin = 40;
-bool buttonState = false;
-bool dormantState = false;
-unsigned int updateCounter = 0;
-const unsigned long debounceDelay = 30;
-volatile unsigned long lastDebounce = millis() - debounceDelay;
+Button button(40);
 
 void buttonISR()
 {
-  lastDebounce = millis();
+    button.pinISR();
 }
 
 void setup() {
-  Serial.begin(115200);
+    Serial.begin(115200);
 
-  pinMode(buttonPin, INPUT);
-  attachInterrupt(digitalPinToInterrupt(buttonPin), buttonISR, CHANGE);
+    button.begin(buttonISR);
 }
 
 void loop()
 {
-  bool curButtonState = digitalRead(buttonPin);
+    button.update();
 
-  if ((millis() - lastDebounce) > debounceDelay)
-  {
-    if (curButtonState != buttonState)
-    {
-      buttonState = curButtonState;
-
-      if (buttonState == HIGH) {
-        dormantState = !dormantState;
-        updateCounter++;
-      }
-    }
-  }
-
-  Serial.print(dormantState);
-  Serial.print("\t");
-  Serial.print(updateCounter);
-  Serial.print("\t");
-  Serial.println(curButtonState);
+    Serial.println(button.getState());
 }
