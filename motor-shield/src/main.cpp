@@ -6,6 +6,8 @@ size_t motorNum = 2;
 unsigned int motorPorts[2] = {Motor_Wrapper::SHIELD_M1, Motor_Wrapper::SHIELD_M3};
 Motor_Wrapper motors(motorPorts, motorNum);
 
+Encoder_Wrapper encoders;
+
 void setup()
 {
   Serial.begin(115200);
@@ -16,11 +18,12 @@ void setup()
   {
     unsigned int encoderPins[motorNum * Encoder_Wrapper::PINS_PER_SENSOR] = {46, 44, 50, 48};
     motors.setEncoders(encoderPins);
+    unsigned int localEncoderPins[motorNum * Encoder_Wrapper::PINS_PER_SENSOR] = {46, 44, 50, 48};
+    encoders.createSensor(localEncoderPins, 2);
   }
 
-  motors.setPid(3.5, 10, 0, Motor_Wrapper::MOTOR_LEFT);
-  motors.setPid(3.5, 10, 0, Motor_Wrapper::MOTOR_RIGHT);
-  motors.setPid(1, 2.5, 0.15, Motor_Wrapper::MOTOR_DIF);
+  motors.setPid(0.8, 0.75, 0, Motor_Wrapper::MOTOR_LEFT);
+  motors.setPid(0.85, 0.8, 0, Motor_Wrapper::MOTOR_RIGHT);
   motors.setSpeedMultiplier(Motor_Wrapper::MOTOR_FLIP, Motor_Wrapper::MOTOR_LEFT);
   motors.setSpeedMultiplier(Motor_Wrapper::MOTOR_NO_FLIP, Motor_Wrapper::MOTOR_RIGHT);
 
@@ -51,24 +54,34 @@ void loop()
 {
   motors.update();
 
-  long int rightCount = motors.getUpdateCounts(Motor_Wrapper::MOTOR_RIGHT);
-  long int leftCount = motors.getUpdateCounts(Motor_Wrapper::MOTOR_LEFT);
+  if (millis() < 10000)
+  {
+      encoders.resetCount();
+  }
+
   double rightActualSpeed = motors.getActualSpeed(Motor_Wrapper::MOTOR_RIGHT);
   double leftActualSpeed = motors.getActualSpeed(Motor_Wrapper::MOTOR_LEFT);
-  unsigned int rightElapsedTime = motors.getElapsedNewSpeedTime_MS(Motor_Wrapper::MOTOR_RIGHT);
-  unsigned int leftElapsedTime = motors.getElapsedNewSpeedTime_MS(Motor_Wrapper::MOTOR_LEFT);
+  double rightOutput = motors.getOutput(Motor_Wrapper::MOTOR_RIGHT);
+  double leftOutput = motors.getOutput(Motor_Wrapper::MOTOR_LEFT);
+  double rightInput = motors.getInput(Motor_Wrapper::MOTOR_RIGHT);
+  double leftInput = motors.getInput(Motor_Wrapper::MOTOR_LEFT);
 
-  Serial.print("Left Count: ");
-  Serial.print(leftCount);
-  Serial.print("\t right count: ");
-  Serial.print(rightCount);
-  Serial.print("\t Left Actual Speed: ");
   Serial.print(leftActualSpeed);
-  Serial.print("\tRight Actual Speed: ");
+  Serial.print("\t");
   Serial.print(rightActualSpeed);
-  Serial.print("\tLeft Elapsed Time: ");
-  Serial.print(leftElapsedTime);
-  Serial.print("\tRight Elapsed Time: ");
-  Serial.print(rightElapsedTime);
+  Serial.print("\t");
+  Serial.print(leftInput);
+  Serial.print("\t");
+  Serial.print(rightInput);
+  Serial.print("\t");
+  Serial.print(leftOutput);
+  Serial.print("\t");
+  Serial.print(rightOutput);
+  Serial.print("\t");
+  Serial.print(encoders.getCount(Encoder_Wrapper::ENCODER_LEFT));
+  Serial.print("\t");
+  Serial.print(encoders.getCount(Encoder_Wrapper::ENCODER_RIGHT));
+  Serial.print("\t");
+  Serial.print(millis());
   Serial.print("\n");
 }
