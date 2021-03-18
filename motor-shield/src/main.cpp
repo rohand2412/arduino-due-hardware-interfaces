@@ -8,6 +8,9 @@ Motor_Wrapper motors(motorPorts, motorNum);
 
 Encoder_Wrapper encoders;
 
+bool stopped = false;
+unsigned long stopped_ms = 0;
+
 void setup()
 {
   Serial.begin(115200);
@@ -53,6 +56,28 @@ void setup()
 void loop()
 {
   motors.update();
+
+  switch (millis())
+  {
+      case 7500 ... 11000:
+          motors.stop();
+          break;
+      case 11001 ... 11020:
+          motors.start();
+          break;
+      case 15000 ... 15500:
+          motors.setSpeed(0, Motor_Wrapper::MOTOR_ALL);
+          break;
+      case 18001 ... 18020:
+          motors.start();
+          break;
+      case 20001 ... 20020:
+          motors.setSpeed(0.5, Motor_Wrapper::MOTOR_ALL);
+          break;
+      case 22000 ... 22020:
+          motors.run(-0.5);
+          break;
+  }
 
   if (millis() < 10000)
   {
