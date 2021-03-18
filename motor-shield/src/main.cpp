@@ -109,6 +109,10 @@ void loop()
   double rightInput = motors.getInput(Motor_Wrapper::MOTOR_RIGHT);
   double leftInput = motors.getInput(Motor_Wrapper::MOTOR_LEFT);
 
+  Serial.print(motors.getActualMode(Motor_Wrapper::MOTOR_LEFT) ? "AUTO" : "MANU");
+  Serial.print("\t");
+  Serial.print(motors.getActualMode(Motor_Wrapper::MOTOR_RIGHT) ? "AUTO" : "MANU");
+  Serial.print("\t");
   Serial.print(leftActualSpeed);
   Serial.print("\t");
   Serial.print(rightActualSpeed);
