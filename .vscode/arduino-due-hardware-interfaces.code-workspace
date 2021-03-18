@@ -46,8 +46,12 @@
         {
             "name": "oscilloscope",
             "path": "../oscilloscope"
-        }
-    ],
+        },
+		{
+			"name": "motor-pwm-calibration",
+			"path": "../motor-pwm-calibration"
+		}
+	],
 	"settings": 
 	{
 		"files.autoSave": "onFocusChange",
