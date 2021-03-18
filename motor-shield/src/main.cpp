@@ -77,6 +77,24 @@ void loop()
       case 22000 ... 22020:
           motors.run(-0.5);
           break;
+      case 25000 ... 25020:
+          motors.setPwm(100);
+          break;
+      case 28000 ... 28020:
+          motors.stop();
+          break;
+      case 30000 ... 30020:
+          motors.setSpeed(-0.5);
+          break;
+      case 31000 ... 31020:
+          motors.setPwm(-150);
+          break;
+      case 33000 ... 33020:
+          motors.start();
+          break;
+      case 36000 ... 36020:
+          motors.run(0.5);
+          break;
   }
 
   if (millis() < 10000)
