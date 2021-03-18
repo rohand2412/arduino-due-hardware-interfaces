@@ -26,6 +26,8 @@ void setup()
     motors.setEncoders(encoderPins);
   }
 
+  motors.setPid(0.8, 0.75, 0, Motor_Wrapper::MOTOR_LEFT);
+  motors.setPid(0.85, 0.8, 0, Motor_Wrapper::MOTOR_RIGHT);
   motors.setSpeedMultiplier(Motor_Wrapper::MOTOR_FLIP, Motor_Wrapper::MOTOR_LEFT);
   motors.setSpeedMultiplier(Motor_Wrapper::MOTOR_NO_FLIP, Motor_Wrapper::MOTOR_RIGHT);
 
@@ -33,7 +35,7 @@ void setup()
 
   const size_t encoderNum = 2;
   unsigned int encoderPins[encoderNum * Encoder_Wrapper::PINS_PER_SENSOR] = {44, 46, 48, 50};
-  encoders.begin(encoderPins, encoderNum);
+  encoders.createSensor(encoderPins, encoderNum);
 }
 
 void loop()
@@ -44,9 +46,13 @@ void loop()
     for (uint8_t pwm = 0; pwm <= 100; pwm += 5)
     {
       encoders.resetCount();
+      motors.setPwm(pwm, motor);
       unsigned long lastTime = millis();
-      motors.run(pwm, motor);
-      delay(5000);
+      motors.start();
+      while (millis() - lastTime <= 5000)
+      {
+          motors.update();
+      }
       unsigned long now = millis();
       motors.stop();
       double timeScaler = (double) INTERVAL_MS / (double) (now - lastTime);
