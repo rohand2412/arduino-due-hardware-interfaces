@@ -130,5 +130,17 @@ void loop()
   Serial.print(encoders.getCount(Encoder_Wrapper::ENCODER_RIGHT));
   Serial.print("\t");
   Serial.print(millis());
+  Serial.print("\t");
+  Serial.print(motors.getActualCoef(Motor_Wrapper::KP_INDEX, Motor_Wrapper::MOTOR_LEFT));
+  Serial.print("\t");
+  Serial.print(motors.getActualCoef(Motor_Wrapper::KI_INDEX, Motor_Wrapper::MOTOR_LEFT));
+  Serial.print("\t");
+  Serial.print(motors.getActualCoef(Motor_Wrapper::KD_INDEX, Motor_Wrapper::MOTOR_LEFT));
+  Serial.print("\t");
+  Serial.print(motors.getActualCoef(Motor_Wrapper::KP_INDEX, Motor_Wrapper::MOTOR_RIGHT));
+  Serial.print("\t");
+  Serial.print(motors.getActualCoef(Motor_Wrapper::KI_INDEX, Motor_Wrapper::MOTOR_RIGHT));
+  Serial.print("\t");
+  Serial.print(motors.getActualCoef(Motor_Wrapper::KD_INDEX, Motor_Wrapper::MOTOR_RIGHT));
   Serial.print("\n");
 }
