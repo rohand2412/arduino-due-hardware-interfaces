@@ -75,6 +75,7 @@ void loop()
           motors.setSpeed(0.5, Motor_Wrapper::MOTOR_ALL);
           break;
       case 22000 ... 22020:
+          encoders.resetCount();
           motors.run(-0.5);
           break;
       case 25000 ... 25020:
@@ -90,9 +91,11 @@ void loop()
           motors.setPwm(-150);
           break;
       case 33000 ... 33020:
+          encoders.resetCount();
           motors.start();
           break;
       case 36000 ... 36020:
+          encoders.resetCount();
           motors.run(0.5);
           break;
   }
