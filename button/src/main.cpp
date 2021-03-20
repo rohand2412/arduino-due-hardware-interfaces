@@ -1,8 +1,8 @@
 #include <Arduino.h>
 #include <Wire.h>
-#include <Button.h>
+#include <Button_Wrapper.h>
 
-Button button(40);
+Button_Wrapper button(40);
 
 void buttonISR()
 {
