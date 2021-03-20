@@ -2,19 +2,25 @@
 #include <Wire.h>
 #include <LightPeripherals.h>
 
-LED led(39);
-
-RGB_LED rgb(36, 35, 37);
+LED led(5);
 
 void setup() 
 {
     led.begin();
-    rgb.begin();
+
+    led.on();
 }
 
 void loop() 
 {
-    led.toggle();
-    rgb.toggle();
-    delay(250);
+    for (int i = 0; i <= 255; i++)
+    {
+        led.setPwm(i);
+        delay(10);
+    }
+    for (int i = 255; i >= 0; i--)
+    {
+        led.setPwm(i);
+        delay(10);
+    }
 }
