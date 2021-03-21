@@ -8,8 +8,8 @@
             "path": "../rpi-serial"
         },
         {
-            "name": "motor-shield",
-            "path": "../motor-shield"
+            "name": "motors",
+            "path": "../motors"
         },
         {
             "name": "servo",
