@@ -3,7 +3,7 @@
 #include <Serial_Wrapper.h>
 
 const size_t bufferLen = 256;
-long buffer[bufferLen];
+int32_t buffer[bufferLen];
 size_t dataLen = 0;
 
 void setup() 
