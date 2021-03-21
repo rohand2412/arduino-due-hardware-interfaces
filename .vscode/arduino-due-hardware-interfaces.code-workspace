@@ -50,6 +50,10 @@
 		{
 			"name": "motor-pwm-calibration",
 			"path": "../motor-pwm-calibration"
+        },
+        {
+            "name": "rgb-led",
+            "path": "../rgb-led"
 		}
 	],
 	"settings": 
