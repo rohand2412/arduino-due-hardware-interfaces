@@ -36,8 +36,8 @@
             "path": "../robot"
         },
         {
-            "name": "light-peripherals",
-            "path": "../light-peripherals"
+            "name": "led",
+            "path": "../led"
         },
         {
             "name": "button",
