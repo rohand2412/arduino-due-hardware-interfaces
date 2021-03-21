@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <Wire.h>
-#include <LightPeripherals.h>
+#include "RGB_LED.h"
 
 RGB_LED rgb(2, 3, 4);
 
