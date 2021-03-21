@@ -47,15 +47,15 @@
             "name": "oscilloscope",
             "path": "../oscilloscope"
         },
-		{
-			"name": "motor-pwm-calibration",
-			"path": "../motor-pwm-calibration"
+        {
+            "name": "motor-pwm-calibration",
+            "path": "../motor-pwm-calibration"
         },
         {
             "name": "rgb-led",
             "path": "../rgb-led"
-		}
-	],
+        }
+    ],
 	"settings": 
 	{
 		"files.autoSave": "onFocusChange",
