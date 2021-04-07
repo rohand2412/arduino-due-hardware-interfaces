@@ -11,20 +11,19 @@ void ultrasonicRightISR() { robot.getUltrasonics().echoPinISR(Ultrasonic_Wrapper
 
 void ultrasonicBackISR() { robot.getUltrasonics().echoPinISR(Ultrasonic_Wrapper::ULTRASONIC_BACK); }
 
+void buttonPinISR() { robot.getButton().pinISR(); }
+
 int turnCount = 0;
 
 bool drove = false;
 
 void setup() 
 {
-    Serial_Wrapper::begin(115200, Serial);
-
-
     void (*ultrasonicISR[4])() = {ultrasonicFrontISR,
                                   ultrasonicLeftISR,
                                   ultrasonicRightISR,
                                   ultrasonicBackISR};
-    robot.begin(ultrasonicISR);
+    robot.begin(ultrasonicISR, buttonPinISR);
 }
 
 void loop()
