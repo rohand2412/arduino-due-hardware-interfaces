@@ -15,7 +15,10 @@ void buttonPinISR() { robot.getButton().pinISR(); }
 
 int turnCount = 0;
 
-bool drove = false;
+bool droveForward = false;
+bool droveBackward = false;
+
+uint32_t start_MS;
 
 void setup() 
 {
@@ -24,13 +27,23 @@ void setup()
                                   ultrasonicRightISR,
                                   ultrasonicBackISR};
     robot.begin(ultrasonicISR, buttonPinISR);
+
+    robot.getRGB_LED().setPwm(255, 0, 0);
+    robot.getRGB_LED().on();
+    while (robot.isDormant())
+    {
+        robot.update();
+    }
+    robot.getRGB_LED().off();
+
+    start_MS = millis();
 }
 
 void loop()
 {
     robot.update();
 
-    switch (millis())
+    switch (millis() - start_MS)
     {
         case 0 ... 9999:
             robot.run(0.5, 0.5);
@@ -85,7 +98,6 @@ void loop()
 
         case 65000 ... 69750:
             robot.getLED().toggle();
-            robot.getRGB_LED().toggle();
             delay(250);
             break;
 
@@ -98,12 +110,17 @@ void loop()
             Serial.print(robot.getEncoders().getCount(Encoder_Wrapper::ENCODER_RIGHT));
             Serial.print("\n");
 
-            if (!drove)
+            if (!droveForward && !droveBackward && !robot.isDrivingDistance())
             {
                 robot.runDistance_CM(0.5, 30);
-                drove = true;
+                droveForward = true;
             }
-            if (!robot.isDrivingDistance())
+            else if (droveForward && !droveBackward && !robot.isDrivingDistance())
+            {
+                robot.runDistance_CM(0.5, -30);
+                droveBackward = true;
+            }
+            else if (droveForward && droveBackward && !robot.isDrivingDistance())
             {
                 robot.getMotors().stop();
             }
