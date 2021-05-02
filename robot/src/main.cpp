@@ -50,7 +50,7 @@ void loop()
             break;
         
         case 10000 ... 14999:
-            robot.getMotors().stop();
+            robot.stop();
             robot.captureBall();
             break;
         
@@ -91,7 +91,7 @@ void loop()
                 }
                 else
                 {
-                    robot.run(0, 0);
+                    robot.stop();
                 }
             }
             break;
@@ -122,9 +122,19 @@ void loop()
             }
             else if (droveForward && droveBackward && !robot.isDrivingDistance())
             {
-                robot.getMotors().stop();
+                robot.stop();
             }
             break;
+
+        case 90000 ... 109999:
+            if (millis() - start_MS < 100000)
+            {
+                robot.run(0.5, 0.5);
+            }
+            else
+            {
+                robot.stop();
+            }
 
         default:
             Serial.print("nearObstacle: ");
