@@ -62,6 +62,10 @@
         {
             "name": "set-line",
             "path": "../set-line"
+        },
+        {
+            "name": "recording-studio",
+            "path": "../recording-studio"
         }
     ],
 	"settings": 
