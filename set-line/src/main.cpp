@@ -11,14 +11,17 @@ void ultrasonicRightISR() { robot.getUltrasonics().echoPinISR(Ultrasonic_Wrapper
 
 void ultrasonicBackISR() { robot.getUltrasonics().echoPinISR(Ultrasonic_Wrapper::ULTRASONIC_BACK); }
 
+void ultrasonicTopISR() { robot.getUltrasonics().echoPinISR(Ultrasonic_Wrapper::ULTRASONIC_TOP); }
+
 void buttonPinISR() { robot.getButton().pinISR(); }
 
 void setup()
 {
-    void (*ultrasonicISR[4])() = {ultrasonicFrontISR,
+    void (*ultrasonicISR[5])() = {ultrasonicFrontISR,
                                   ultrasonicLeftISR,
                                   ultrasonicRightISR,
-                                  ultrasonicBackISR};
+                                  ultrasonicBackISR,
+                                  ultrasonicTopISR};
     robot.begin(ultrasonicISR, buttonPinISR);
 
     while (robot.isDormant())
