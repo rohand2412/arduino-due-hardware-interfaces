@@ -25,8 +25,8 @@ void setup()
     encoders.createSensor(localEncoderPins, 2);
   }
 
-  motors.setPid(0.8, 0.75, 0, 0.75, 0.7, 0, Motor_Wrapper::MOTOR_LEFT);
-  motors.setPid(0.8, 0.8, 0, 0.7, 0.7, 0, Motor_Wrapper::MOTOR_RIGHT);
+  motors.setPid(0.7, 0.7, 0, 0.7, 0.7, 0, Motor_Wrapper::MOTOR_LEFT);
+  motors.setPid(0.75, 0.7, 0, 0.7, 0.7, 0, Motor_Wrapper::MOTOR_RIGHT);
   motors.setSpeedMultiplier(Motor_Wrapper::MOTOR_FLIP, Motor_Wrapper::MOTOR_LEFT);
   motors.setSpeedMultiplier(Motor_Wrapper::MOTOR_NO_FLIP, Motor_Wrapper::MOTOR_RIGHT);
 
