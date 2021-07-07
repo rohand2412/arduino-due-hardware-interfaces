@@ -3,15 +3,15 @@
 #include <Serial_Wrapper.h>
 
 const size_t bufferLen = 256;
-int32_t buffer[bufferLen];
+int32_t buffer[bufferLen] = {0};
 size_t dataLen = 0;
 
 void setup() 
 {
     Serial_Wrapper::begin(750000, Serial);
 
-    Serial_Wrapper::begin(115200, Serial3);
-    Serial_Wrapper::setDefault(Serial3);
+    Serial_Wrapper::begin(115200, Serial2);
+    Serial_Wrapper::setDefault(Serial2);
 }
 
 void loop() 
